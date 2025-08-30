@@ -172,54 +172,59 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 border-orange-200 dark:border-gray-700">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-gray-900 dark:text-gray-100">
-            <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-orange-100 dark:hover:bg-gray-700">
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            {clip.title}
+            <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent font-bold">
+              {clip.title}
+            </span>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Clip Player */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-gradient-to-r from-orange-100 to-yellow-100 dark:from-gray-800 dark:to-gray-700 rounded-lg p-6 shadow-lg border border-orange-200 dark:border-gray-600">
             <div className="flex items-center gap-4 mb-4">
-              <Avatar>
+              <Avatar className="ring-2 ring-orange-300 dark:ring-orange-500">
                 <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${clip.user_id}`} />
-                <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                <AvatarFallback className="bg-orange-200 dark:bg-gray-600 text-orange-800 dark:text-gray-200">
                   U
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100">{clip.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Duration: {clip.duration}s</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Duration: {clip.duration}s</p>
               </div>
             </div>
 
-            <Button onClick={togglePlay} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+            <Button
+              onClick={togglePlay}
+              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg"
+            >
               {isPlaying ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
               {isPlaying ? "Pause" : "Play"} Riff
             </Button>
           </div>
 
           {/* Comments Section */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 rounded-lg p-6 shadow-lg border border-yellow-200 dark:border-gray-600">
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
               Comments ({comments.length})
             </h3>
 
             {currentUser && !hasCommented && (
-              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
+              <div className="mb-4 p-4 bg-gradient-to-r from-orange-100 to-yellow-100 dark:from-gray-700 dark:to-gray-600 rounded-lg border border-orange-300 dark:border-gray-500">
+                <p className="text-sm text-orange-800 dark:text-orange-200 mb-3">
                   Add a comment before you can rate this riff:
                 </p>
                 <Textarea
                   placeholder="Share your thoughts about this riff... (minimum 4 characters)"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  className="mb-3 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                  className="mb-3 bg-white dark:bg-gray-800 border-orange-300 dark:border-gray-500 text-gray-900 dark:text-gray-100 focus:border-orange-500 dark:focus:border-orange-400"
                 />
                 {showValidationError && newComment.trim().length < 4 && (
                   <p className="text-sm text-red-600 dark:text-red-400 mb-2">
@@ -238,7 +243,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                     !newComment.trim() ||
                     comments.filter((c) => c.user_id === currentUser?.id).length >= 10
                   }
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
                 >
                   {isSubmitting ? "Posting..." : "Post Comment"}
                 </Button>
@@ -250,11 +255,11 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                 {comments.map((comment) => (
                   <div
                     key={comment.id}
-                    className="flex gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    className="flex gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-orange-200 dark:border-gray-600 shadow-sm"
                   >
-                    <Avatar className="w-8 h-8">
+                    <Avatar className="w-8 h-8 ring-1 ring-orange-300 dark:ring-orange-500">
                       <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`} />
-                      <AvatarFallback className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
+                      <AvatarFallback className="bg-orange-200 dark:bg-gray-600 text-orange-800 dark:text-gray-200">
                         U
                       </AvatarFallback>
                     </Avatar>
@@ -266,7 +271,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="h-6 w-6 p-0 text-orange-400 hover:text-orange-600 dark:hover:text-orange-300"
                           disabled
                           title="Contact feature coming soon"
                         >
@@ -286,7 +291,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
 
           {/* Reviews Section */}
           {currentUser && hasCommented && !userReview && (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 rounded-lg p-6 shadow-lg border border-red-200 dark:border-gray-600">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Rate This Riff</h3>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
@@ -317,7 +322,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
               <Button
                 onClick={submitReview}
                 disabled={isSubmitting || Object.values(ratings).some((r) => r === 0)}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white disabled:bg-gray-400 dark:disabled:bg-gray-600"
+                className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white disabled:from-gray-400 disabled:to-gray-500 dark:disabled:from-gray-600 dark:disabled:to-gray-700"
               >
                 {isSubmitting ? "Submitting..." : "Submit Review"}
               </Button>
@@ -326,7 +331,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
 
           {/* Existing Reviews */}
           {reviews.length > 0 && (showComments || hasCommented) && (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-gradient-to-r from-yellow-50 to-red-50 dark:from-gray-800 dark:to-gray-700 rounded-lg p-6 shadow-lg border border-yellow-200 dark:border-gray-600">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
                 Reviews ({reviews.length})
               </h3>
@@ -334,12 +339,12 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                 {reviews.map((review) => (
                   <div
                     key={review.id}
-                    className="p-4 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                    className="p-4 bg-white dark:bg-gray-700 rounded-lg border border-orange-200 dark:border-gray-600 shadow-sm"
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <Avatar className="w-8 h-8">
+                      <Avatar className="w-8 h-8 ring-1 ring-orange-300 dark:ring-orange-500">
                         <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user_id}`} />
-                        <AvatarFallback className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
+                        <AvatarFallback className="bg-orange-200 dark:bg-gray-600 text-orange-800 dark:text-gray-200">
                           U
                         </AvatarFallback>
                       </Avatar>
@@ -351,7 +356,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            className="h-6 w-6 p-0 text-orange-400 hover:text-orange-600 dark:hover:text-orange-300"
                             disabled
                             title="Contact feature coming soon"
                           >
@@ -359,28 +364,16 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                           </Button>
                         </div>
                         <div className="flex gap-2 mb-2 flex-wrap">
-                          <Badge
-                            variant="outline"
-                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-                          >
+                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
                             Technique: {review.technique_rating}/5
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-                          >
+                          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
                             Creativity: {review.creativity_rating}/5
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-                          >
+                          <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
                             Tone: {review.tone_rating}/5
                           </Badge>
-                          <Badge
-                            variant="outline"
-                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-                          >
+                          <Badge className="bg-gradient-to-r from-orange-600 to-red-600 text-white border-0">
                             Overall: {review.overall_rating}/5
                           </Badge>
                         </div>
