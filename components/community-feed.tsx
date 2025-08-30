@@ -34,6 +34,7 @@ interface ClipWithStats {
   user_id: string
   avg_rating: number
   review_count: number
+  comment_count: number
   profiles: {
     display_name: string | null
     avatar_url: string | null
@@ -62,6 +63,19 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
     getCurrentUser()
   }, [])
 
+  const timeAgo = (dateString: string) => {
+    const now = new Date()
+    const date = new Date(dateString)
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+    if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`
+    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`
+    if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`
+    return `${Math.floor(diffInSeconds / 31536000)} years ago`
+  }
+
   const sortedClips = useMemo(() => {
     const clipsCopy = [...clips]
 
@@ -72,10 +86,9 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
         return clipsCopy.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
       case "popular":
         return clipsCopy.sort((a, b) => {
-          if (b.avg_rating !== a.avg_rating) {
-            return b.avg_rating - a.avg_rating
-          }
-          return b.review_count - a.review_count
+          const aPopularity = a.review_count * 2 + a.comment_count + a.avg_rating * 3
+          const bPopularity = b.review_count * 2 + b.comment_count + b.avg_rating * 3
+          return bPopularity - aPopularity
         })
       default:
         return clipsCopy
@@ -311,13 +324,18 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      {new Date(clip.created_at).toLocaleDateString()}
+                      {timeAgo(clip.created_at)}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <MessageCircle className="w-4 h-4" />
-                    <span className="font-medium">{clip.review_count}</span>
-                    <span className="text-xs">review{clip.review_count !== 1 ? "s" : ""}</span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-500" />
+                      <span className="font-medium">{clip.review_count}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MessageCircle className="w-4 h-4 text-blue-500" />
+                      <span className="font-medium">{clip.comment_count || 0}</span>
+                    </div>
                   </div>
                 </div>
 
