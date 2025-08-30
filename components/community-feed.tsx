@@ -161,16 +161,22 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                   </div>
                   <div className="flex items-center gap-1">
                     <MessageCircle className="w-4 h-4" />
-                    {clip.review_count}
+                    <span className="font-medium">{clip.review_count}</span>
+                    <span className="text-xs">review{clip.review_count !== 1 ? "s" : ""}</span>
                   </div>
                 </div>
 
-                <Button
-                  asChild
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-                >
-                  <Link href={`/clip/${clip.id}`}>View & Review</Link>
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    asChild
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                  >
+                    <Link href={`/clip/${clip.id}`}>
+                      <Star className="w-4 h-4 mr-2" />
+                      Rate this Riff
+                    </Link>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )

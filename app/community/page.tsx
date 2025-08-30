@@ -64,12 +64,10 @@ export default async function CommunityPage() {
       </header>
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Discover Amazing Riffs</h2>{" "}
-          {/* Added dark mode text color */}
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Community Riffs</h2>
           <p className="text-gray-600 dark:text-gray-300">
-            Listen, rate, and comment on riffs from musicians around the world
-          </p>{" "}
-          {/* Added dark mode text color */}
+            Listen to amazing riffs and help fellow musicians improve with your feedback
+          </p>
         </div>
 
         <CommunityFeed clips={clipsWithStats || []} />
