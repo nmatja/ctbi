@@ -9,7 +9,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-3">
           <div className="flex flex-col items-center md:items-start gap-1">
-            <h3 className="text-sm font-medium bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h3 className="text-sm font-medium bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
               Could that be it?
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-left">
