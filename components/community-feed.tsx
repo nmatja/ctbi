@@ -195,14 +195,14 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
           return (
             <Card
               key={clip.id}
-              className={`hover:shadow-lg transition-all duration-200 bg-white/90 backdrop-blur-sm border-gray-200 dark:bg-gray-800/90 dark:border-gray-700 dark:hover:bg-gray-800/95 ${
+              className={`hover:shadow-lg transition-all duration-200 bg-white/95 backdrop-blur-sm border-gray-200 hover:bg-white dark:bg-gray-800/95 dark:border-gray-700 dark:hover:bg-gray-800 hover:shadow-orange-200/20 dark:hover:shadow-gray-900/50 ${
                 viewMode === "list" ? "flex" : ""
               }`}
             >
               <CardHeader className={`pb-4 ${viewMode === "list" ? "flex-shrink-0 w-64" : ""}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <Avatar className="h-10 w-10 ring-2 ring-orange-200 dark:ring-gray-600">
+                    <Avatar className="h-10 w-10 ring-2 ring-orange-200 dark:ring-orange-500/30">
                       <AvatarImage src={avatarUrl || undefined} alt={displayName} />
                       <AvatarFallback className="bg-gradient-to-br from-orange-400 to-red-500 text-white text-sm">
                         {displayName.charAt(0).toUpperCase()}
@@ -233,7 +233,10 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                   <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{clip.description}</p>
                 )}
 
-                <audio controls className="w-full h-10 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                <audio
+                  controls
+                  className="w-full h-10 bg-gray-100 dark:bg-gray-700 rounded-lg [&::-webkit-media-controls-panel]:bg-gray-100 [&::-webkit-media-controls-panel]:dark:bg-gray-700"
+                >
                   <source src={clip.file_url} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>

@@ -103,6 +103,12 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
       return
     }
 
+    const userCommentCount = comments.filter((comment) => comment.user_id === currentUser.id).length
+    if (userCommentCount >= 10) {
+      setShowValidationError(true)
+      return
+    }
+
     setIsSubmitting(true)
     setShowValidationError(false)
     const { error } = await supabase.from("comments").insert({
@@ -220,9 +226,18 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                     Comment must be at least 4 characters long.
                   </p>
                 )}
+                {showValidationError && comments.filter((c) => c.user_id === currentUser?.id).length >= 10 && (
+                  <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                    You can only add up to 10 comments per clip.
+                  </p>
+                )}
                 <Button
                   onClick={submitComment}
-                  disabled={isSubmitting || !newComment.trim()}
+                  disabled={
+                    isSubmitting ||
+                    !newComment.trim() ||
+                    comments.filter((c) => c.user_id === currentUser?.id).length >= 10
+                  }
                   className="bg-purple-600 hover:bg-purple-700 text-white"
                 >
                   {isSubmitting ? "Posting..." : "Post Comment"}
