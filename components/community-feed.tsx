@@ -73,10 +73,28 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
         return clipsCopy.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
       case "popular":
         return clipsCopy.sort((a, b) => {
-          // Primary factor: average rating (weighted heavily)
-          const aPopularity = a.avg_rating * 5 + a.review_count * 2 + a.comment_count
-          const bPopularity = b.avg_rating * 5 + b.review_count * 2 + b.comment_count
-          return bPopularity - aPopularity
+          // Clips with reviews should always rank higher than clips without reviews
+          const aHasReviews = a.review_count > 0 && a.avg_rating > 0
+          const bHasReviews = b.review_count > 0 && b.avg_rating > 0
+
+          // If one has reviews and the other doesn't, prioritize the one with reviews
+          if (aHasReviews && !bHasReviews) return -1
+          if (!aHasReviews && bHasReviews) return 1
+
+          // If both have reviews, sort by weighted score
+          if (aHasReviews && bHasReviews) {
+            const aPopularity = a.avg_rating * 5 + a.review_count * 2 + a.comment_count
+            const bPopularity = b.avg_rating * 5 + b.review_count * 2 + b.comment_count
+            return bPopularity - aPopularity
+          }
+
+          // If neither has reviews, sort by engagement (comments then creation date)
+          if (a.comment_count !== b.comment_count) {
+            return b.comment_count - a.comment_count
+          }
+
+          // Finally, sort by newest if everything else is equal
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         })
       default:
         return clipsCopy
