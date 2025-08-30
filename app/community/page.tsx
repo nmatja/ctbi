@@ -7,13 +7,14 @@ import { Music } from "lucide-react"
 import Link from "next/link"
 
 interface PageProps {
-  searchParams: { page?: string }
+  searchParams: Promise<{ page?: string }>
 }
 
 export default async function CommunityPage({ searchParams }: PageProps) {
   const supabase = await createClient()
+  const resolvedSearchParams = await searchParams
 
-  const page = Number.parseInt(searchParams.page || "1")
+  const page = Number.parseInt(resolvedSearchParams.page || "1")
   const itemsPerPage = 12
   const offset = (page - 1) * itemsPerPage
 
@@ -23,19 +24,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
     count,
   } = await supabase
     .from("clips")
-    .select(
-      `
-      *,
-      profiles!user_id (
-        display_name,
-        avatar_url
-      ),
-      reviews (
-        overall_rating
-      )
-    `,
-      { count: "exact" },
-    )
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: false })
     .range(offset, offset + itemsPerPage - 1)
 
@@ -43,19 +32,44 @@ export default async function CommunityPage({ searchParams }: PageProps) {
     console.log("[v0] Community feed query error:", error)
   }
 
+  let clipsWithProfiles = clips || []
+  if (clips && clips.length > 0) {
+    const userIds = clips.map((clip) => clip.user_id)
+    const { data: profiles } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", userIds)
+
+    clipsWithProfiles = clips.map((clip) => {
+      const profile = profiles?.find((p) => p.id === clip.user_id)
+      return {
+        ...clip,
+        profiles: profile
+          ? {
+              display_name: profile.display_name,
+              avatar_url: profile.avatar_url,
+            }
+          : null,
+      }
+    })
+  }
+
+  let clipsWithStats = clipsWithProfiles
+  if (clips && clips.length > 0) {
+    const clipIds = clips.map((clip) => clip.id)
+    const { data: reviews } = await supabase.from("reviews").select("clip_id, overall_rating").in("clip_id", clipIds)
+
+    clipsWithStats = clipsWithProfiles.map((clip) => {
+      const clipReviews = reviews?.filter((r) => r.clip_id === clip.id) || []
+      const avgRating =
+        clipReviews.length > 0 ? clipReviews.reduce((sum, r) => sum + r.overall_rating, 0) / clipReviews.length : 0
+      return {
+        ...clip,
+        avg_rating: avgRating,
+        review_count: clipReviews.length,
+      }
+    })
+  }
+
   console.log("[v0] Fetched clips count:", clips?.length || 0)
   console.log("[v0] Total clips in database:", count)
-
-  // Calculate average ratings for each clip
-  const clipsWithStats = clips?.map((clip) => {
-    const reviews = clip.reviews || []
-    const avgRating = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.overall_rating, 0) / reviews.length : 0
-    return {
-      ...clip,
-      avg_rating: avgRating,
-      review_count: reviews.length,
-    }
-  })
 
   const totalPages = Math.ceil((count || 0) / itemsPerPage)
   const hasNextPage = page < totalPages
