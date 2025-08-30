@@ -77,7 +77,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
   const hasPrevPage = page > 1
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       {/* Header */}
       <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full relative z-10">
         {/* Logo Section - Left */}
@@ -88,7 +88,9 @@ export default async function CommunityPage({ searchParams }: PageProps) {
               <Waves className="w-6 h-6" />
             </Link>
           </Button>
-          <h1 className="text-2xl font-light text-primary">Could that be it?</h1>
+          <h1 className="text-2xl font-light bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+            Could that be it?
+          </h1>
         </div>
 
         {/* Explore Section - Center */}
@@ -111,11 +113,11 @@ export default async function CommunityPage({ searchParams }: PageProps) {
 
       <main className="flex-1 max-w-7xl mx-auto px-6 py-8 relative z-10">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Community Riffs</h2>
-          <p className="text-gray-600 dark:text-gray-300">
+          <h2 className="text-2xl font-bold text-foreground mb-2">Community Riffs</h2>
+          <p className="text-muted-foreground">
             Listen to amazing riffs and help fellow musicians improve with your feedback
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Showing {clipsWithStats?.length || 0} of {count || 0} total riffs (Page {page} of {totalPages})
           </p>
         </div>
@@ -126,11 +128,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
               asChild
               variant="outline"
               disabled={!hasPrevPage}
-              className={
-                !hasPrevPage
-                  ? "opacity-50 cursor-not-allowed"
-                  : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-              }
+              className={!hasPrevPage ? "opacity-50 cursor-not-allowed" : "border-border text-foreground"}
             >
               <Link href={`/community?page=${page - 1}`}>Previous</Link>
             </Button>
@@ -149,7 +147,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
                     className={
                       pageNum === page
                         ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
-                        : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                        : "border-border text-foreground"
                     }
                   >
                     <Link href={`/community?page=${pageNum}`}>{pageNum}</Link>
@@ -162,11 +160,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
               asChild
               variant="outline"
               disabled={!hasNextPage}
-              className={
-                !hasNextPage
-                  ? "opacity-50 cursor-not-allowed"
-                  : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-              }
+              className={!hasNextPage ? "opacity-50 cursor-not-allowed" : "border-border text-foreground"}
             >
               <Link href={`/community?page=${page + 1}`}>Next</Link>
             </Button>
