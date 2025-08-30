@@ -45,23 +45,34 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      {" "}
-      {/* Added flex flex-col for footer positioning */}
-      <header className="flex items-center justify-between p-6 max-w-6xl mx-auto">
-        <div className="flex items-center gap-3">
+      <header className="flex items-center justify-between p-6 max-w-6xl mx-auto w-full">
+        {/* Logo section - Left */}
+        <div className="flex items-center gap-3 flex-1">
           <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
             <Music className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Could that be it?</h1>
         </div>
-        <div className="flex items-center gap-3">
+
+        {/* Explore button - Center */}
+        <div className="flex-1 flex justify-center">
+          <Link
+            href="/community"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-6 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200"
+          >
+            <Music className="w-4 h-4" />
+            Explore
+          </Link>
+        </div>
+
+        {/* Profile section - Right */}
+        <div className="flex items-center gap-3 flex-1 justify-end">
           <ThemeToggle />
           <UserMenu />
         </div>
       </header>
       {/* Main Content */}
       <main className="flex-1 max-w-4xl mx-auto px-6 py-12 text-center">
-        {" "}
         {/* Added flex-1 to push footer to bottom */}
         <div className="mb-12">
           <h2 className="text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
@@ -111,15 +122,6 @@ export default function HomePage() {
               </div>
             </div>
           )}
-        </div>
-        <div>
-          <Link
-            href="/community"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-8 py-3 text-lg rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200"
-          >
-            <Music className="w-5 h-5" />
-            Explore Community Riffs
-          </Link>
         </div>
       </main>
       <Footer />

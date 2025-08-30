@@ -306,21 +306,25 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
 
       {/* Upload Form */}
       {file && (
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
+              <Label htmlFor="title" className="text-gray-900 dark:text-gray-100">
+                Title *
+              </Label>
               <Input
                 id="title"
                 placeholder="Give your riff a catchy title..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 disabled={isUploading}
-                className="h-12"
+                className="h-12 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Description (optional)</Label>
+              <Label htmlFor="description" className="text-gray-900 dark:text-gray-100">
+                Description (optional)
+              </Label>
               <Textarea
                 id="description"
                 placeholder="Tell us about your riff, the gear you used, or the inspiration behind it..."
@@ -328,6 +332,7 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={isUploading}
                 rows={3}
+                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
 

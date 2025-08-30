@@ -192,9 +192,9 @@ export function UserMenu() {
                 <Edit3 className="h-3 w-3" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
               <DialogHeader>
-                <DialogTitle>Edit Nickname</DialogTitle>
+                <DialogTitle className="text-gray-900 dark:text-gray-100">Edit Nickname</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <Input
@@ -202,14 +202,21 @@ export function UserMenu() {
                   onChange={(e) => setNewNickname(e.target.value)}
                   placeholder="Enter your nickname"
                   maxLength={50}
+                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 />
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setIsEditingNickname(false)} disabled={isUpdating}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditingNickname(false)}
+                    disabled={isUpdating}
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleUpdateNickname}
                     disabled={isUpdating || !newNickname.trim() || newNickname.trim().length < 2}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
                   >
                     {isUpdating ? "Updating..." : "Update"}
                   </Button>
