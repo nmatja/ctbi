@@ -27,6 +27,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
     technique: 0,
     creativity: 0,
     tone: 0,
+    audio_quality: 0,
     overall: 0,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -140,6 +141,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
       technique_rating: ratings.technique,
       creativity_rating: ratings.creativity,
       tone_rating: ratings.tone,
+      audio_quality_rating: ratings.audio_quality,
       overall_rating: ratings.overall,
     })
 
@@ -308,6 +310,14 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                   {renderStars(ratings.tone, (rating) => setRatings((prev) => ({ ...prev, tone: rating })))}
                 </div>
                 <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                    Audio Quality
+                  </label>
+                  {renderStars(ratings.audio_quality, (rating) =>
+                    setRatings((prev) => ({ ...prev, audio_quality: rating })),
+                  )}
+                </div>
+                <div className="col-span-2">
                   <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Overall</label>
                   {renderStars(ratings.overall, (rating) => setRatings((prev) => ({ ...prev, overall: rating })))}
                 </div>
@@ -372,6 +382,9 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                           </Badge>
                           <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
                             Tone: {review.tone_rating}/5
+                          </Badge>
+                          <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+                            Audio Quality: {review.audio_quality_rating}/5
                           </Badge>
                           <Badge className="bg-gradient-to-r from-orange-600 to-red-600 text-white border-0">
                             Overall: {review.overall_rating}/5

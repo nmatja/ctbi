@@ -73,8 +73,9 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
         return clipsCopy.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
       case "popular":
         return clipsCopy.sort((a, b) => {
-          const aPopularity = a.review_count * 2 + a.comment_count + a.avg_rating * 3
-          const bPopularity = b.review_count * 2 + b.comment_count + b.avg_rating * 3
+          // Primary factor: average rating (weighted heavily)
+          const aPopularity = a.avg_rating * 5 + a.review_count * 2 + a.comment_count
+          const bPopularity = b.avg_rating * 5 + b.review_count * 2 + b.comment_count
           return bPopularity - aPopularity
         })
       default:
