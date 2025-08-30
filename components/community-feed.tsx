@@ -236,7 +236,6 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{clip.title}</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 truncate">by {displayName}</p>
                     </div>
                   </div>
@@ -259,6 +258,8 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                 {clip.description && (
                   <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{clip.description}</p>
                 )}
+
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{clip.title}</h3>
 
                 <audio
                   controls
