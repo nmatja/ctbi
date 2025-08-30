@@ -164,96 +164,120 @@ export function LatestActivity() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl border-2 border-transparent bg-clip-padding shadow-lg relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-orange-400 via-yellow-400 to-red-400 rounded-2xl opacity-20"></div>
-      <div className="relative p-8">
+    <div className="bg-gradient-to-br from-orange-50/80 via-yellow-50/80 to-red-50/80 dark:from-gray-900/95 dark:via-gray-800/95 dark:to-gray-900/95 rounded-2xl border-2 border-orange-200/50 dark:border-orange-800/30 shadow-xl backdrop-blur-sm relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-400/10 via-yellow-400/10 to-red-400/10 dark:from-orange-500/5 dark:via-yellow-500/5 dark:to-red-500/5 rounded-2xl"></div>
+      <div className="relative p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-light text-orange-600 dark:text-orange-400 flex items-center gap-2">
-            <Music className="w-6 h-6 text-orange-500" />
+          <h3 className="text-2xl font-semibold bg-gradient-to-r from-orange-600 via-yellow-600 to-red-600 dark:from-orange-400 dark:via-yellow-400 dark:to-red-400 bg-clip-text text-transparent flex items-center gap-3">
+            <div className="p-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg">
+              <Music className="w-5 h-5 text-white" />
+            </div>
             Latest Activity
           </h3>
           <Badge
             variant="secondary"
-            className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-0"
+            className="text-xs font-medium bg-gradient-to-r from-orange-500 to-red-500 dark:from-orange-400 dark:to-red-500 text-white border-0 shadow-md px-3 py-1"
           >
             Live Feed
           </Badge>
         </div>
 
-        <div className="space-y-4 mb-6">
+        <div className="space-y-3 mb-6">
           {activities.length > 0 ? (
             activities.map((activity) => (
               <Card
                 key={activity.id}
-                className="hover:shadow-md transition-shadow bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-orange-200 dark:border-orange-800"
+                className="group hover:shadow-lg transition-all duration-300 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-orange-200/60 dark:border-orange-700/40 hover:border-orange-300 dark:hover:border-orange-600 rounded-xl overflow-hidden"
               >
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-1">
-                      {getAvatar(activity)}
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">{getAvatar(activity)}</div>
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          {activity.type === "clip" && <Music className="w-4 h-4 text-orange-600" />}
-                          {activity.type === "review" && <Star className="w-4 h-4 text-yellow-600" />}
-                          {activity.type === "comment" && <MessageCircle className="w-4 h-4 text-red-600" />}
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          {activity.type === "clip" && (
+                            <div className="p-1 rounded-full bg-orange-100 dark:bg-orange-900/30">
+                              <Music className="w-3 h-3 text-orange-600 dark:text-orange-400" />
+                            </div>
+                          )}
+                          {activity.type === "review" && (
+                            <div className="p-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30">
+                              <Star className="w-3 h-3 text-yellow-600 dark:text-yellow-400" />
+                            </div>
+                          )}
+                          {activity.type === "comment" && (
+                            <div className="p-1 rounded-full bg-red-100 dark:bg-red-900/30">
+                              <MessageCircle className="w-3 h-3 text-red-600 dark:text-red-400" />
+                            </div>
+                          )}
 
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          <span className="text-sm font-semibold text-gray-900 dark:text-white">
                             {getDisplayName(activity)}
-                          </span>
-
-                          <span className="text-xs text-gray-600 dark:text-gray-400">
-                            {activity.type === "clip" && "uploaded a new riff"}
-                            {activity.type === "review" && `rated ${activity.rating}/5 stars`}
-                            {activity.type === "comment" && "left a comment"}
                           </span>
                         </div>
 
-                        <p className="text-sm text-gray-700 dark:text-gray-300 truncate">{activity.title}</p>
+                        <span className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded-full">
+                          {activity.type === "clip" && "uploaded a new riff"}
+                          {activity.type === "review" && `rated ${activity.rating}/5 stars`}
+                          {activity.type === "comment" && "left a comment"}
+                        </span>
+                      </div>
 
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          {new Date(activity.created_at).toLocaleDateString()} •
+                      <h4 className="text-base font-medium text-gray-900 dark:text-white line-clamp-1">
+                        {activity.title}
+                      </h4>
+
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(activity.created_at).toLocaleDateString()}
+                        </p>
+
+                        <div className="flex items-center gap-2">
                           <Button
                             asChild
                             variant="link"
-                            className="p-0 h-auto text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
+                            className="p-0 h-auto text-xs font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
                           >
-                            <Link href={"/community"}>{" Click to listen"}</Link>
+                            <Link href={"/community"}>Click to listen</Link>
                           </Button>
-                        </p>
+
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="sm"
+                            className="text-orange-600 hover:text-white dark:text-orange-400 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 dark:hover:from-orange-400 dark:hover:to-red-400 transition-all duration-300 rounded-full w-8 h-8 p-0"
+                          >
+                            <Link href={currentUser ? "/community" : "/auth/login"}>
+                              <Play className="w-4 h-4" />
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
                     </div>
-
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="sm"
-                      className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900/20"
-                    >
-                      <Link href={currentUser ? "/community" : "/auth/login"}>
-                        <Play className="w-4 h-4" />
-                      </Link>
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
             ))
           ) : (
-            <div className="text-center py-8">
-              <Music className="w-12 h-12 text-orange-400 dark:text-orange-500 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-300">No recent activity yet. Be the first to share!</p>
+            <div className="text-center py-12">
+              <div className="p-4 rounded-full bg-gradient-to-r from-orange-500 to-red-500 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <Music className="w-8 h-8 text-white" />
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">No recent activity yet</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Be the first to share your music!</p>
             </div>
           )}
         </div>
 
-        <div className="text-center space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+        <div className="text-center space-y-4 pt-4 border-t border-orange-200/50 dark:border-orange-700/30">
+          <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
             Join our community of musicians sharing their passion for music
           </p>
 
           <Button
             asChild
-            className="bg-gradient-to-r from-orange-500 via-yellow-500 to-red-500 text-white hover:from-orange-600 hover:via-yellow-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-gradient-to-r from-orange-500 via-yellow-500 to-red-500 hover:from-orange-600 hover:via-yellow-600 hover:to-red-600 dark:from-orange-400 dark:via-yellow-400 dark:to-red-400 dark:hover:from-orange-500 dark:hover:via-yellow-500 dark:hover:to-red-500 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 rounded-full"
           >
             <Link href="/community" className="flex items-center gap-2">
               Explore All Riffs
