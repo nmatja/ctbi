@@ -31,6 +31,8 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasCommented, setHasCommented] = useState(false)
   const [userReview, setUserReview] = useState<any>(null)
+  const [showValidationError, setShowValidationError] = useState(false)
+  const [showComments, setShowComments] = useState(false)
 
   const supabase = createClient()
 
@@ -51,14 +53,12 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
   const fetchCommentsAndReviews = async () => {
     if (!clip) return
 
-    // Fetch comments
     const { data: commentsData } = await supabase
       .from("comments")
       .select("*")
       .eq("clip_id", clip.id)
       .order("created_at", { ascending: true })
 
-    // Fetch reviews
     const { data: reviewsData } = await supabase
       .from("reviews")
       .select("*")
@@ -83,9 +83,13 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
   }
 
   const submitComment = async () => {
-    if (!newComment.trim() || !currentUser) return
+    if (!newComment.trim() || newComment.trim().length < 4 || !currentUser) {
+      setShowValidationError(true)
+      return
+    }
 
     setIsSubmitting(true)
+    setShowValidationError(false)
     const { error } = await supabase.from("comments").insert({
       clip_id: clip.id,
       user_id: currentUser.id,
@@ -95,14 +99,20 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
     if (!error) {
       setNewComment("")
       fetchCommentsAndReviews()
+      setShowComments(true)
     }
     setIsSubmitting(false)
   }
 
   const submitReview = async () => {
-    if (!currentUser || !hasCommented) return
+    const allRatingsFilled = Object.values(ratings).every((rating) => rating > 0)
+    if (!currentUser || !hasCommented || !allRatingsFilled) {
+      setShowValidationError(true)
+      return
+    }
 
     setIsSubmitting(true)
+    setShowValidationError(false)
     const { error } = await supabase.from("reviews").insert({
       clip_id: clip.id,
       user_id: currentUser.id,
@@ -114,6 +124,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
 
     if (!error) {
       fetchCommentsAndReviews()
+      setShowComments(true)
     }
     setIsSubmitting(false)
   }
@@ -124,7 +135,11 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-5 h-5 cursor-pointer ${star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+            className={`w-5 h-5 cursor-pointer transition-colors ${
+              star <= rating
+                ? "fill-yellow-400 text-yellow-400"
+                : "text-gray-300 dark:text-gray-600 hover:text-yellow-200"
+            }`}
             onClick={() => onRate?.(star)}
           />
         ))}
@@ -136,10 +151,10 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={onClose}>
+          <DialogTitle className="flex items-center gap-3 text-gray-900 dark:text-gray-100">
+            <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-gray-100 dark:hover:bg-gray-800">
               <ArrowLeft className="w-4 h-4" />
             </Button>
             {clip.title}
@@ -148,87 +163,117 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
 
         <div className="space-y-6">
           {/* Clip Player */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-4 mb-4">
               <Avatar>
                 <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${clip.user_id}`} />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                  U
+                </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-semibold">{clip.title}</h3>
-                <p className="text-sm text-gray-600">Duration: {clip.duration}s</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{clip.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Duration: {clip.duration}s</p>
               </div>
             </div>
 
-            <Button onClick={togglePlay} className="w-full">
+            <Button onClick={togglePlay} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
               {isPlaying ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
               {isPlaying ? "Pause" : "Play"} Riff
             </Button>
           </div>
 
           {/* Comments Section */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-4">Comments ({comments.length})</h3>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+              Comments ({comments.length})
+            </h3>
 
             {currentUser && !hasCommented && (
-              <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-800 mb-3">Add a comment before you can rate this riff:</p>
+              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
+                  Add a comment before you can rate this riff:
+                </p>
                 <Textarea
-                  placeholder="Share your thoughts about this riff..."
+                  placeholder="Share your thoughts about this riff... (minimum 4 characters)"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  className="mb-3"
+                  className="mb-3 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                 />
-                <Button onClick={submitComment} disabled={isSubmitting || !newComment.trim()}>
+                {showValidationError && newComment.trim().length < 4 && (
+                  <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                    Comment must be at least 4 characters long.
+                  </p>
+                )}
+                <Button
+                  onClick={submitComment}
+                  disabled={isSubmitting || !newComment.trim()}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
                   {isSubmitting ? "Posting..." : "Post Comment"}
                 </Button>
               </div>
             )}
 
-            <div className="space-y-3">
-              {comments.map((comment) => (
-                <div key={comment.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`} />
-                    <AvatarFallback>U</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="text-sm">{comment.content}</p>
-                    <p className="text-xs text-gray-500 mt-1">{new Date(comment.created_at).toLocaleDateString()}</p>
+            {(showComments || hasCommented) && (
+              <div className="space-y-3">
+                {comments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="flex gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                  >
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`} />
+                      <AvatarFallback className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
+                        U
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-900 dark:text-gray-100">{comment.content}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {new Date(comment.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Reviews Section */}
           {currentUser && hasCommented && !userReview && (
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">Rate This Riff</h3>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Rate This Riff</h3>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Technique</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Technique</label>
                   {renderStars(ratings.technique, (rating) => setRatings((prev) => ({ ...prev, technique: rating })))}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Creativity</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Creativity</label>
                   {renderStars(ratings.creativity, (rating) => setRatings((prev) => ({ ...prev, creativity: rating })))}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Tone</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Tone</label>
                   {renderStars(ratings.tone, (rating) => setRatings((prev) => ({ ...prev, tone: rating })))}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Overall</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Overall</label>
                   {renderStars(ratings.overall, (rating) => setRatings((prev) => ({ ...prev, overall: rating })))}
                 </div>
               </div>
 
+              {showValidationError && Object.values(ratings).some((r) => r === 0) && (
+                <p className="text-sm text-red-600 dark:text-red-400 mb-4">
+                  Please rate all categories before submitting.
+                </p>
+              )}
+
               <Button
                 onClick={submitReview}
                 disabled={isSubmitting || Object.values(ratings).some((r) => r === 0)}
-                className="w-full"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white disabled:bg-gray-400 dark:disabled:bg-gray-600"
               >
                 {isSubmitting ? "Submitting..." : "Submit Review"}
               </Button>
@@ -236,25 +281,54 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
           )}
 
           {/* Existing Reviews */}
-          {reviews.length > 0 && (
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">Reviews ({reviews.length})</h3>
+          {reviews.length > 0 && (showComments || hasCommented) && (
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                Reviews ({reviews.length})
+              </h3>
               <div className="space-y-4">
                 {reviews.map((review) => (
-                  <div key={review.id} className="p-4 bg-gray-50 rounded-lg">
+                  <div
+                    key={review.id}
+                    className="p-4 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                  >
                     <div className="flex items-center gap-3 mb-3">
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user_id}`} />
-                        <AvatarFallback>U</AvatarFallback>
+                        <AvatarFallback className="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">
+                          U
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
-                        <div className="flex gap-2 mb-2">
-                          <Badge variant="outline">Technique: {review.technique_rating}/5</Badge>
-                          <Badge variant="outline">Creativity: {review.creativity_rating}/5</Badge>
-                          <Badge variant="outline">Tone: {review.tone_rating}/5</Badge>
-                          <Badge variant="outline">Overall: {review.overall_rating}/5</Badge>
+                        <div className="flex gap-2 mb-2 flex-wrap">
+                          <Badge
+                            variant="outline"
+                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                          >
+                            Technique: {review.technique_rating}/5
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                          >
+                            Creativity: {review.creativity_rating}/5
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                          >
+                            Tone: {review.tone_rating}/5
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                          >
+                            Overall: {review.overall_rating}/5
+                          </Badge>
                         </div>
-                        <p className="text-xs text-gray-500">{new Date(review.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(review.created_at).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
                   </div>
