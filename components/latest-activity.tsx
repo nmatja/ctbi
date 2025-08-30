@@ -164,7 +164,7 @@ export function LatestActivity() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl border-2 border-transparent bg-clip-padding shadow-lg relative overflow-hidden">
+    <div className="bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-900 dark:to-black rounded-2xl border-2 border-transparent bg-clip-padding shadow-lg relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-orange-400 via-yellow-400 to-red-400 rounded-2xl opacity-20"></div>
       <div className="relative p-8">
         <div className="flex items-center justify-between mb-6">
@@ -174,7 +174,7 @@ export function LatestActivity() {
           </h3>
           <Badge
             variant="secondary"
-            className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-0"
+            className="text-xs bg-gradient-to-r from-orange-500 to-red-500 text-white border-0"
           >
             Live Feed
           </Badge>
@@ -185,7 +185,7 @@ export function LatestActivity() {
             activities.map((activity) => (
               <Card
                 key={activity.id}
-                className="hover:shadow-md transition-shadow bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-orange-200 dark:border-orange-800"
+                className="hover:shadow-md transition-shadow bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm border border-orange-200 dark:border-orange-700"
               >
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -193,32 +193,39 @@ export function LatestActivity() {
                       {getAvatar(activity)}
 
                       <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1 truncate">
+                          {activity.title}
+                        </h4>
+
                         <div className="flex items-center gap-2 mb-1">
                           {activity.type === "clip" && <Music className="w-4 h-4 text-orange-600" />}
                           {activity.type === "review" && <Star className="w-4 h-4 text-yellow-600" />}
                           {activity.type === "comment" && <MessageCircle className="w-4 h-4 text-red-600" />}
 
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             {getDisplayName(activity)}
                           </span>
 
-                          <span className="text-xs text-gray-600 dark:text-gray-400">
-                            {activity.type === "clip" && "uploaded a new riff"}
-                            {activity.type === "review" && `rated ${activity.rating}/5 stars`}
-                            {activity.type === "comment" && "left a comment"}
-                          </span>
+                          {activity.rating && (
+                            <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-0.5">
+                              {activity.rating}/5 ⭐
+                            </Badge>
+                          )}
                         </div>
 
-                        <p className="text-sm text-gray-700 dark:text-gray-300 truncate">{activity.title}</p>
-
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          {new Date(activity.created_at).toLocaleDateString()} •
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          {activity.type === "clip" && "uploaded a new riff"}
+                          {activity.type === "review" && "left a review"}
+                          {activity.type === "comment" && "left a comment"}
+                          {" • "}
+                          {new Date(activity.created_at).toLocaleDateString()}
+                          {" • "}
                           <Button
                             asChild
                             variant="link"
                             className="p-0 h-auto text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
                           >
-                            <Link href={"/community"}>{" Click to listen"}</Link>
+                            <Link href={"/community"}>Click to listen</Link>
                           </Button>
                         </p>
                       </div>
