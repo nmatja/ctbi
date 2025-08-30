@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, Settings, LogOut, Upload } from "lucide-react"
+import { LogOut, Music } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState, useCallback } from "react" // Added useCallback
 import type { User as SupabaseUser } from "@supabase/supabase-js"
@@ -96,7 +96,10 @@ export function UserMenu() {
   }
 
   const displayName = profile?.display_name || user.email?.split("@")[0] || "User"
-  const avatarUrl = profile?.avatar_url
+  const gravatarUrl = user.email
+    ? `https://www.gravatar.com/avatar/${btoa(user.email.toLowerCase().trim())}?d=identicon&s=32`
+    : null
+  const avatarUrl = profile?.avatar_url || gravatarUrl
 
   return (
     <DropdownMenu>
@@ -119,16 +122,8 @@ export function UserMenu() {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push("/my-clips")}>
-          <Upload className="mr-2 h-4 w-4" />
+          <Music className="mr-2 h-4 w-4" />
           My Clips
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/profile")}>
-          <User className="mr-2 h-4 w-4" />
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/settings")}>
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>

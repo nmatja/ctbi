@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { UserMenu } from "@/components/user-menu"
 import { UploadDropzone } from "@/components/upload-dropzone"
+import { Music, ArrowDown } from "lucide-react"
 import Link from "next/link"
 
 export default function HomePage() {
@@ -35,22 +36,20 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-orange-100 to-pink-100 flex items-center justify-center">
-        <div className="text-2xl font-semibold text-gray-700">Loading...</div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-2xl font-semibold text-gray-700 dark:text-gray-300">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-orange-100 to-pink-100">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <header className="flex items-center justify-between p-6 max-w-6xl mx-auto">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white text-xl">
-            🎵
+          <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+            <Music className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Could that be it?
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Could that be it?</h1>
         </div>
         <div className="flex items-center gap-3">
           <ThemeToggle />
@@ -67,36 +66,36 @@ export default function HomePage() {
               Musical Magic
             </span>
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
             Upload your guitar riffs, get feedback from fellow musicians, and discover amazing sounds from the
             community.
           </p>
         </div>
 
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border-2 border-gray-200 dark:border-gray-700 p-12 shadow-2xl mb-12">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <span className="text-2xl">✨</span>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-12 shadow-lg mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Music className="w-6 h-6 text-purple-600" />
             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">Upload New Riff Here</h3>
-            <span className="text-2xl">✨</span>
+            <Music className="w-6 h-6 text-pink-600" />
           </div>
 
           <div className="flex justify-center mb-6">
-            <div className="text-3xl animate-bounce">⬇️</div>
+            <ArrowDown className="w-8 h-8 text-purple-600 animate-bounce" />
           </div>
 
           {user ? (
             <UploadDropzone />
           ) : (
-            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-12 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-12 bg-gray-50 dark:bg-gray-800/50">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                  🎸
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Music className="w-8 h-8 text-white" />
                 </div>
                 <div>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                     Sign in to Upload Your Riffs
                   </p>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  <p className="text-gray-700 dark:text-gray-300 mb-4">
                     Join our community of musicians and start sharing your music
                   </p>
                   <Link
@@ -114,9 +113,10 @@ export default function HomePage() {
         <div>
           <Link
             href="/community"
-            className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-8 py-3 text-lg rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-8 py-3 text-lg rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200"
           >
-            🎵 Explore Community Riffs
+            <Music className="w-5 h-5" />
+            Explore Community Riffs
           </Link>
         </div>
       </main>
