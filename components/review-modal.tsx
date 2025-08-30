@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Star, Play, Pause, ArrowLeft } from "lucide-react"
+import { Star, Play, Pause, ArrowLeft, MessageCircle } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
@@ -21,6 +21,7 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null)
   const [comments, setComments] = useState<any[]>([])
   const [reviews, setReviews] = useState<any[]>([])
+  const [profiles, setProfiles] = useState<any[]>([])
   const [newComment, setNewComment] = useState("")
   const [ratings, setRatings] = useState({
     technique: 0,
@@ -65,10 +66,24 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
       .eq("clip_id", clip.id)
       .order("created_at", { ascending: false })
 
+    const userIds = [...(commentsData?.map((c) => c.user_id) || []), ...(reviewsData?.map((r) => r.user_id) || [])]
+    const uniqueUserIds = [...new Set(userIds)]
+
+    if (uniqueUserIds.length > 0) {
+      const { data: profilesData } = await supabase.from("profiles").select("id, display_name").in("id", uniqueUserIds)
+
+      setProfiles(profilesData || [])
+    }
+
     setComments(commentsData || [])
     setReviews(reviewsData || [])
     setHasCommented(commentsData?.some((comment) => comment.user_id === currentUser?.id) || false)
     setUserReview(reviewsData?.find((review) => review.user_id === currentUser?.id))
+  }
+
+  const getUserDisplayName = (userId: string) => {
+    const profile = profiles.find((p) => p.id === userId)
+    return profile?.display_name || "Anonymous User"
   }
 
   const togglePlay = () => {
@@ -229,6 +244,20 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {getUserDisplayName(comment.user_id)}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          disabled
+                          title="Contact feature coming soon"
+                        >
+                          <MessageCircle className="w-3 h-3" />
+                        </Button>
+                      </div>
                       <p className="text-sm text-gray-900 dark:text-gray-100">{comment.content}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {new Date(comment.created_at).toLocaleDateString()}
@@ -300,6 +329,20 @@ export function ReviewModal({ isOpen, onClose, clip, currentUser }: ReviewModalP
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {getUserDisplayName(review.user_id)}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            disabled
+                            title="Contact feature coming soon"
+                          >
+                            <MessageCircle className="w-3 h-3" />
+                          </Button>
+                        </div>
                         <div className="flex gap-2 mb-2 flex-wrap">
                           <Badge
                             variant="outline"

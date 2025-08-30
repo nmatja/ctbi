@@ -6,7 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Clock, Calendar, Star, MessageCircle, TrendingUp, User, Share2, Copy, Check } from "lucide-react"
+import {
+  Clock,
+  Calendar,
+  Star,
+  MessageCircle,
+  TrendingUp,
+  User,
+  Share2,
+  Copy,
+  Check,
+  Grid3X3,
+  List,
+  Shuffle,
+} from "lucide-react"
 import Link from "next/link"
 import { ReviewModal } from "@/components/review-modal"
 import { createClient } from "@/lib/supabase/client"
@@ -33,9 +46,10 @@ interface CommunityFeedProps {
 
 export function CommunityFeed({ clips }: CommunityFeedProps) {
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "popular">("newest")
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [selectedClip, setSelectedClip] = useState<ClipWithStats | null>(null)
   const [currentUser, setCurrentUser] = useState<any>(null)
-  const [copiedClipId, setCopiedClipId] = useState<string | null>(null) // Added state for copy feedback
+  const [copiedClipId, setCopiedClipId] = useState<string | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -67,6 +81,17 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
         return clipsCopy
     }
   }, [clips, sortBy])
+
+  const handleRandomClip = () => {
+    if (clips.length > 0) {
+      const randomIndex = Math.floor(Math.random() * clips.length)
+      setSelectedClip(clips[randomIndex])
+    }
+  }
+
+  const handleRatingClick = (clip: ClipWithStats) => {
+    setSelectedClip(clip)
+  }
 
   const handleShare = (clip: ClipWithStats, platform: "twitter" | "facebook" | "discord" | "copy") => {
     const clipUrl = `${window.location.origin}/clip/${clip.id}`
@@ -101,8 +126,8 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
         <div className="w-24 h-24 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
           <User className="w-12 h-12 text-white" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">No riffs yet</h3>
-        <p className="text-gray-600 mb-6">Be the first to share a riff with the community!</p>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">No riffs yet</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">Be the first to share a riff with the community!</p>
         <Button
           asChild
           className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
@@ -115,41 +140,73 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <p className="text-gray-600">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <p className="text-gray-600 dark:text-gray-400">
           {clips.length} riff{clips.length !== 1 ? "s" : ""} in the community
         </p>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Sort by:</span>
-          <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "popular") => setSortBy(value)}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Newest First
-                </div>
-              </SelectItem>
-              <SelectItem value="oldest">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Oldest First
-                </div>
-              </SelectItem>
-              <SelectItem value="popular">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Most Popular
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={handleRandomClip}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-transparent"
+            disabled={!currentUser}
+          >
+            <Shuffle className="w-4 h-4" />
+            {currentUser ? "Random Riff" : "Login for Random"}
+          </Button>
+
+          <div className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-1">
+            <Button
+              variant={viewMode === "grid" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+              className="h-8 w-8 p-0"
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+              className="h-8 w-8 p-0"
+            >
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">Sort by:</span>
+            <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "popular") => setSortBy(value)}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Newest First
+                  </div>
+                </SelectItem>
+                <SelectItem value="oldest">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Oldest First
+                  </div>
+                </SelectItem>
+                <SelectItem value="popular">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" />
+                    Most Popular
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={viewMode === "grid" ? "grid md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
         {sortedClips.map((clip) => {
           const profile = clip.profiles
           const displayName = profile?.display_name || "Anonymous"
@@ -158,9 +215,11 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
           return (
             <Card
               key={clip.id}
-              className="hover:shadow-lg transition-all duration-200 bg-white/80 backdrop-blur-sm dark:bg-gray-800/80"
+              className={`hover:shadow-lg transition-all duration-200 bg-white/80 backdrop-blur-sm dark:bg-gray-800/80 ${
+                viewMode === "list" ? "flex" : ""
+              }`}
             >
-              <CardHeader className="pb-4">
+              <CardHeader className={`pb-4 ${viewMode === "list" ? "flex-shrink-0 w-64" : ""}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <Avatar className="h-10 w-10">
@@ -178,7 +237,8 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                     {clip.avg_rating > 0 && (
                       <Badge
                         variant="secondary"
-                        className="bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-200"
+                        className="bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-200 cursor-pointer hover:bg-yellow-200 dark:hover:bg-yellow-800 transition-colors"
+                        onClick={() => handleRatingClick(clip)}
                       >
                         <Star className="w-3 h-3 mr-1 fill-current" />
                         {clip.avg_rating.toFixed(1)}
@@ -233,7 +293,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className={`space-y-4 ${viewMode === "list" ? "flex-1" : ""}`}>
                 {clip.description && (
                   <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{clip.description}</p>
                 )}
