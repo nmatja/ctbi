@@ -29,6 +29,8 @@ export function UserMenu() {
   const [isEditingNickname, setIsEditingNickname] = useState(false)
   const [newNickname, setNewNickname] = useState("")
   const [isUpdating, setIsUpdating] = useState(false)
+  const [validationError, setValidationError] = useState("")
+  const [isValidating, setIsValidating] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -104,8 +106,53 @@ export function UserMenu() {
     }
   }, [supabase, fetchProfile, getUser])
 
+  const validateNickname = async (nickname: string) => {
+    if (!nickname.trim()) {
+      setValidationError("Nickname is required")
+      return false
+    }
+
+    if (nickname.trim().length < 2) {
+      setValidationError("Nickname must be at least 2 characters")
+      return false
+    }
+
+    if (nickname.trim().length > 50) {
+      setValidationError("Nickname must be less than 50 characters")
+      return false
+    }
+
+    // Check if nickname is already taken (excluding current user)
+    setIsValidating(true)
+    try {
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("display_name", nickname.trim())
+        .neq("id", user?.id || "")
+        .single()
+
+      if (existingProfile) {
+        setValidationError("This nickname is already taken")
+        return false
+      }
+
+      setValidationError("")
+      return true
+    } catch (error) {
+      // No existing profile found, nickname is available
+      setValidationError("")
+      return true
+    } finally {
+      setIsValidating(false)
+    }
+  }
+
   const handleUpdateNickname = async () => {
-    if (!user || !newNickname.trim() || newNickname.trim().length < 2) return
+    if (!user || !newNickname.trim()) return
+
+    const isValid = await validateNickname(newNickname)
+    if (!isValid) return
 
     setIsUpdating(true)
     try {
@@ -117,13 +164,16 @@ export function UserMenu() {
 
       if (error) {
         console.error("Error updating nickname:", error)
+        setValidationError("Failed to update nickname. Please try again.")
       } else {
         setProfile((prev) => (prev ? { ...prev, display_name: newNickname.trim() } : null))
         setIsEditingNickname(false)
         setNewNickname("")
+        setValidationError("")
       }
     } catch (error) {
       console.error("Error updating nickname:", error)
+      setValidationError("Failed to update nickname. Please try again.")
     } finally {
       setIsUpdating(false)
     }
@@ -197,28 +247,45 @@ export function UserMenu() {
                 <DialogTitle className="text-gray-900 dark:text-gray-100">Edit Nickname</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <Input
-                  value={newNickname}
-                  onChange={(e) => setNewNickname(e.target.value)}
-                  placeholder="Enter your nickname"
-                  maxLength={50}
-                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                />
+                <div className="space-y-2">
+                  <Input
+                    value={newNickname}
+                    onChange={(e) => {
+                      setNewNickname(e.target.value)
+                      if (validationError) setValidationError("")
+                    }}
+                    placeholder="Enter your nickname"
+                    maxLength={50}
+                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                  />
+                  {validationError && <p className="text-sm text-red-600 dark:text-red-400">{validationError}</p>}
+                  {isValidating && <p className="text-sm text-blue-600 dark:text-blue-400">Checking availability...</p>}
+                </div>
                 <div className="flex justify-end gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => setIsEditingNickname(false)}
-                    disabled={isUpdating}
+                    onClick={() => {
+                      setIsEditingNickname(false)
+                      setValidationError("")
+                      setNewNickname("")
+                    }}
+                    disabled={isUpdating || isValidating}
                     className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleUpdateNickname}
-                    disabled={isUpdating || !newNickname.trim() || newNickname.trim().length < 2}
+                    disabled={
+                      isUpdating ||
+                      isValidating ||
+                      !newNickname.trim() ||
+                      newNickname.trim().length < 2 ||
+                      !!validationError
+                    }
                     className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
                   >
-                    {isUpdating ? "Updating..." : "Update"}
+                    {isUpdating ? "Updating..." : isValidating ? "Checking..." : "Update"}
                   </Button>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase/client" // Fixed import to use createClient instead of createBrowserClient
+import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar } from "@/components/ui/avatar"
@@ -24,7 +24,7 @@ interface ActivityItem {
 export function LatestActivity() {
   const [activities, setActivities] = useState<ActivityItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [currentUser, setCurrentUser] = useState<any>(null) // Added current user state
+  const [currentUser, setCurrentUser] = useState<any>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -108,6 +108,14 @@ export function LatestActivity() {
 
   const getProtectedDisplayName = () => "Protected User"
 
+  const handleClickToListen = (activity: ActivityItem) => {
+    if (currentUser) {
+      return "/community"
+    } else {
+      return "/auth/login"
+    }
+  }
+
   if (loading) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 shadow-lg">
@@ -175,8 +183,13 @@ export function LatestActivity() {
 
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {new Date(activity.created_at).toLocaleDateString()} •
-                        {activity.type === "clip" && " Click to listen"}
-                        {activity.type === "review" && " Click to see review"}
+                        <Button
+                          asChild
+                          variant="link"
+                          className="p-0 h-auto text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+                        >
+                          <Link href={handleClickToListen(activity)}>{" Click to listen"}</Link>
+                        </Button>
                       </p>
                     </div>
                   </div>
@@ -187,7 +200,7 @@ export function LatestActivity() {
                     size="sm"
                     className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
                   >
-                    <Link href={currentUser ? `/clip/${activity.clip_id}` : "/auth/login"}>
+                    <Link href={currentUser ? "/community" : "/auth/login"}>
                       <Play className="w-4 h-4" />
                     </Link>
                   </Button>
