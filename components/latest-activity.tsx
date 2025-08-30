@@ -138,98 +138,107 @@ export function LatestActivity() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 shadow-lg">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-          <Music className="w-6 h-6 text-purple-600" />
-          Latest Activity
-        </h3>
-        <Badge variant="secondary" className="text-xs">
-          Live Feed
-        </Badge>
-      </div>
+    <div className="bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl border-2 border-transparent bg-clip-padding shadow-lg relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-400 via-yellow-400 to-red-400 rounded-2xl opacity-20"></div>
+      <div className="relative p-8">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-light text-orange-600 dark:text-orange-400 flex items-center gap-2">
+            <Music className="w-6 h-6 text-orange-500" />
+            Latest Activity
+          </h3>
+          <Badge
+            variant="secondary"
+            className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-0"
+          >
+            Live Feed
+          </Badge>
+        </div>
 
-      <div className="space-y-4 mb-6">
-        {activities.length > 0 ? (
-          activities.map((activity) => (
-            <Card key={activity.id} className="hover:shadow-md transition-shadow bg-gray-50 dark:bg-gray-800/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 flex-1">
-                    <Avatar className="w-10 h-10 relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
-                        <Shield className="w-5 h-5 text-white" />
+        <div className="space-y-4 mb-6">
+          {activities.length > 0 ? (
+            activities.map((activity) => (
+              <Card
+                key={activity.id}
+                className="hover:shadow-md transition-shadow bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-orange-200 dark:border-orange-800"
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-1">
+                      <Avatar className="w-10 h-10 relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                          <Shield className="w-5 h-5 text-white" />
+                        </div>
+                      </Avatar>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          {activity.type === "clip" && <Music className="w-4 h-4 text-orange-600" />}
+                          {activity.type === "review" && <Star className="w-4 h-4 text-yellow-600" />}
+                          {activity.type === "comment" && <MessageCircle className="w-4 h-4 text-red-600" />}
+
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            {getProtectedDisplayName()}
+                          </span>
+
+                          <span className="text-xs text-gray-600 dark:text-gray-400">
+                            {activity.type === "clip" && "uploaded a new riff"}
+                            {activity.type === "review" && `rated ${activity.rating}/5 stars`}
+                            {activity.type === "comment" && "left a comment"}
+                          </span>
+                        </div>
+
+                        <p className="text-sm text-gray-700 dark:text-gray-300 truncate">{activity.title}</p>
+
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {new Date(activity.created_at).toLocaleDateString()} •
+                          <Button
+                            asChild
+                            variant="link"
+                            className="p-0 h-auto text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
+                          >
+                            <Link href={handleClickToListen(activity)}>{" Click to listen"}</Link>
+                          </Button>
+                        </p>
                       </div>
-                    </Avatar>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        {activity.type === "clip" && <Music className="w-4 h-4 text-green-600" />}
-                        {activity.type === "review" && <Star className="w-4 h-4 text-yellow-600" />}
-                        {activity.type === "comment" && <MessageCircle className="w-4 h-4 text-blue-600" />}
-
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {getProtectedDisplayName()}
-                        </span>
-
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {activity.type === "clip" && "uploaded a new riff"}
-                          {activity.type === "review" && `rated ${activity.rating}/5 stars`}
-                          {activity.type === "comment" && "left a comment"}
-                        </span>
-                      </div>
-
-                      <p className="text-sm text-gray-700 dark:text-gray-300 truncate">{activity.title}</p>
-
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {new Date(activity.created_at).toLocaleDateString()} •
-                        <Button
-                          asChild
-                          variant="link"
-                          className="p-0 h-auto text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
-                        >
-                          <Link href={handleClickToListen(activity)}>{" Click to listen"}</Link>
-                        </Button>
-                      </p>
                     </div>
+
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="sm"
+                      className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900/20"
+                    >
+                      <Link href={currentUser ? "/community" : "/auth/login"}>
+                        <Play className="w-4 h-4" />
+                      </Link>
+                    </Button>
                   </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center py-8">
+              <Music className="w-12 h-12 text-orange-400 dark:text-orange-500 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-300">No recent activity yet. Be the first to share!</p>
+            </div>
+          )}
+        </div>
 
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="sm"
-                    className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
-                  >
-                    <Link href={currentUser ? "/community" : "/auth/login"}>
-                      <Play className="w-4 h-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div className="text-center py-8">
-            <Music className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <p className="text-gray-600 dark:text-gray-300">No recent activity yet. Be the first to share!</p>
-          </div>
-        )}
-      </div>
+        <div className="text-center space-y-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Join our community of musicians sharing their passion for music
+          </p>
 
-      <div className="text-center space-y-4">
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          Join our community of musicians sharing their passion for music
-        </p>
-
-        <Button
-          asChild
-          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
-        >
-          <Link href="/community" className="flex items-center gap-2">
-            Explore All Riffs
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
+          <Button
+            asChild
+            className="bg-gradient-to-r from-orange-500 via-yellow-500 to-red-500 text-white hover:from-orange-600 hover:via-yellow-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <Link href="/community" className="flex items-center gap-2">
+              Explore All Riffs
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   )
