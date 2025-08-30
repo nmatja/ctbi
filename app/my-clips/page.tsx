@@ -39,7 +39,7 @@ export default async function MyClipsPage() {
         reviews (
           id,
           overall_rating,
-          comment
+          review_text
         )
       `)
       .eq("user_id", user.id)
@@ -65,7 +65,7 @@ export default async function MyClipsPage() {
           ? reviews.reduce((sum: number, review: any) => sum + review.overall_rating, 0) / reviews.length
           : 0
       const reviewCount = reviews.length
-      const commentCount = reviews.filter((review: any) => review.comment && review.comment.trim()).length
+      const commentCount = reviews.filter((review: any) => review.review_text && review.review_text.trim()).length
 
       return {
         ...clip,
@@ -81,9 +81,11 @@ export default async function MyClipsPage() {
       <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full">
         {/* Logo Section - Left */}
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-light bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
-            Could that be it?
-          </h1>
+          <Link href="/">
+            <h1 className="text-2xl font-light bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent hover:from-orange-700 hover:via-orange-600 hover:to-yellow-600 transition-all cursor-pointer">
+              Could that be it?
+            </h1>
+          </Link>
         </div>
 
         {/* Explore Section - Center */}

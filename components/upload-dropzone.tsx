@@ -246,11 +246,14 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
       <div
         className={`border-2 border-dashed rounded-xl p-8 transition-all cursor-pointer ${
           isDragOver
-            ? "border-purple-500 bg-purple-100 dark:bg-purple-950"
+            ? "border-orange-500 bg-transparent"
             : file
-              ? "border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950"
-              : "border-purple-300 bg-gradient-to-br from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 dark:from-purple-950 dark:to-pink-950 dark:hover:from-purple-900 dark:hover:to-pink-900"
+              ? "border-green-300 bg-transparent"
+              : "border-gradient-to-r from-orange-500 via-red-500 to-yellow-500 bg-transparent hover:border-orange-600"
         }`}
+        style={{
+          borderImage: !isDragOver && !file ? "linear-gradient(45deg, #f97316, #ef4444, #eab308) 1" : undefined,
+        }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -272,8 +275,8 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
                 <Music className="w-6 h-6 text-white" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-gray-900">{file.name}</p>
-                <p className="text-sm text-gray-600">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                <p className="font-semibold text-foreground">{file.name}</p>
+                <p className="text-sm text-muted-foreground">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
               </div>
               <Button
                 variant="ghost"
@@ -290,14 +293,14 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
           </div>
         ) : (
           <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 rounded-full flex items-center justify-center mx-auto">
               <Upload className="w-8 h-8 text-white" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-gray-900 mb-2">Drop your audio file here</p>
-              <p className="text-gray-600">Max 10 seconds • MP3, WAV, M4A, OGG, AAC, FLAC supported</p>
+              <p className="text-lg font-semibold text-foreground mb-2">Drop your audio file here</p>
+              <p className="text-muted-foreground">Max 10 seconds • MP3, WAV, M4A, OGG, AAC, FLAC supported</p>
             </div>
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold">
+            <Button className="bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 text-white font-semibold">
               Choose File
             </Button>
           </div>
@@ -306,10 +309,10 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
 
       {/* Upload Form */}
       {file && (
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card className="bg-card/80 backdrop-blur-sm border border-border">
           <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-gray-900 dark:text-gray-100">
+              <Label htmlFor="title" className="text-foreground">
                 Title *
               </Label>
               <Input
@@ -318,11 +321,11 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 disabled={isUploading}
-                className="h-12 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                className="h-12 bg-background border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-gray-900 dark:text-gray-100">
+              <Label htmlFor="description" className="text-foreground">
                 Description (optional)
               </Label>
               <Textarea
@@ -332,7 +335,7 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={isUploading}
                 rows={3}
-                className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
 
@@ -356,7 +359,7 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
             <Button
               onClick={handleUpload}
               disabled={!title.trim() || isUploading}
-              className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold"
+              className="w-full h-12 bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 text-white font-semibold"
             >
               {isUploading ? "Uploading..." : "Share with Community"}
             </Button>
