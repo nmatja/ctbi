@@ -26,7 +26,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
     .select(
       `
       *,
-      profiles:user_id (
+      profiles!user_id (
         display_name,
         avatar_url
       ),
