@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Natural Earth Tone Palette */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -40,6 +41,7 @@
 }
 
 .dark {
+  /* Dark mode with warm earth tones */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);
@@ -119,5 +121,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Added organic texture background pattern */
+    background-image: radial-gradient(circle at 25% 25%, oklch(0.98 0.01 85) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, oklch(0.94 0.02 75) 0%, transparent 50%);
+  }
+  .dark body {
+    background-image: radial-gradient(circle at 25% 25%, oklch(0.18 0.02 45) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, oklch(0.12 0.02 35) 0%, transparent 50%);
   }
 }
