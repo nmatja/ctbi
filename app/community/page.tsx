@@ -78,10 +78,9 @@ export default async function CommunityPage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-orange-50 to-pink-50 dark:from-purple-950 dark:via-slate-900 dark:to-pink-950 flex flex-col">
-      {" "}
-      {/* Added flex flex-col for footer positioning */}
       {/* Header */}
-      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto">
+      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full">
+        {/* Logo Section - Left */}
         <div className="flex items-center gap-3">
           <Button asChild variant="ghost">
             <Link href="/">
@@ -90,17 +89,29 @@ export default async function CommunityPage({ searchParams }: PageProps) {
               </div>
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Community Riffs
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Could that be it?
           </h1>
         </div>
-        <div className="flex items-center gap-3">
+
+        {/* Explore Section - Center */}
+        <div className="flex items-center">
+          <Button
+            asChild
+            variant="ghost"
+            className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+          >
+            <Link href="/community">Explore</Link>
+          </Button>
+        </div>
+
+        {/* Profile Section - Right */}
+        <div className="flex items-center gap-4">
           <ThemeToggle />
           <UserMenu />
         </div>
       </header>
       <main className="flex-1 max-w-7xl mx-auto px-6 py-8">
-        {" "}
         {/* Added flex-1 to push footer to bottom */}
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Community Riffs</h2>

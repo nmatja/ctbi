@@ -31,7 +31,8 @@ export default async function MyClipsPage() {
       {" "}
       {/* Added flex flex-col for footer positioning */}
       {/* Header */}
-      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto">
+      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full">
+        {/* Logo Section - Left */}
         <div className="flex items-center gap-3">
           <Button asChild variant="ghost">
             <Link href="/">
@@ -40,10 +41,23 @@ export default async function MyClipsPage() {
               </div>
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            My Clips
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Could that be it?
           </h1>
         </div>
+
+        {/* Explore Section - Center */}
+        <div className="flex items-center">
+          <Button
+            asChild
+            variant="ghost"
+            className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+          >
+            <Link href="/community">Explore</Link>
+          </Button>
+        </div>
+
+        {/* Profile Section - Right */}
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <UserMenu />

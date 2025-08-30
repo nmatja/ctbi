@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { UserMenu } from "@/components/user-menu"
 import { UploadDropzone } from "@/components/upload-dropzone"
+import { LatestActivity } from "@/components/latest-activity"
 import { Footer } from "@/components/footer" // Added footer import
 import { Music, ArrowDown } from "lucide-react"
 import Link from "next/link"
@@ -122,6 +123,10 @@ export default function HomePage() {
               </div>
             </div>
           )}
+        </div>
+
+        <div className="mb-12">
+          <LatestActivity />
         </div>
       </main>
       <Footer />
