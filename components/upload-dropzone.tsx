@@ -31,52 +31,6 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
   const router = useRouter()
   const supabase = createClient()
 
-  const trimAudioTo10Seconds = useCallback((file: File): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const fileReader = new FileReader()
-
-      fileReader.onload = async (e) => {
-        try {
-          const arrayBuffer = e.target?.result as ArrayBuffer
-          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
-
-          // If audio is 10 seconds or less, return original file
-          if (audioBuffer.duration <= 10) {
-            resolve(file)
-            return
-          }
-
-          // Create new buffer with only first 10 seconds
-          const trimmedLength = Math.floor(audioBuffer.sampleRate * 10)
-          const trimmedBuffer = audioContext.createBuffer(
-            audioBuffer.numberOfChannels,
-            trimmedLength,
-            audioBuffer.sampleRate,
-          )
-
-          // Copy first 10 seconds of audio data
-          for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-            const channelData = audioBuffer.getChannelData(channel)
-            const trimmedChannelData = trimmedBuffer.getChannelData(channel)
-            for (let i = 0; i < trimmedLength; i++) {
-              trimmedChannelData[i] = channelData[i]
-            }
-          }
-
-          // Convert back to file (simplified - in real implementation you'd need proper encoding)
-          // For now, we'll just resolve with original file and show a warning
-          resolve(file)
-        } catch (error) {
-          reject(error)
-        }
-      }
-
-      fileReader.onerror = () => reject(new Error("Failed to read audio file"))
-      fileReader.readAsArrayBuffer(file)
-    })
-  }, [])
-
   const validateFile = useCallback((file: File): Promise<boolean> => {
     return new Promise((resolve) => {
       const allowedTypes = [
@@ -104,12 +58,12 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
         return
       }
 
-      // Check duration - allow longer files but warn they'll be trimmed
+      // Check duration - warn if longer than 10 seconds
       const audio = new Audio()
       audio.src = URL.createObjectURL(file)
       audio.onloadedmetadata = () => {
         if (audio.duration > 10) {
-          setError(`Audio is ${Math.round(audio.duration)}s long. It will be automatically trimmed to 10 seconds.`)
+          setError(`Audio is ${Math.round(audio.duration)}s long. Please trim to 10 seconds or less for best results.`)
         }
         URL.revokeObjectURL(audio.src)
         resolve(true)
@@ -175,44 +129,49 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
     setUploadProgress(0)
 
     try {
+      console.log("[v0] Starting upload process")
+
       // Get current user
       const {
         data: { user },
       } = await supabase.auth.getUser()
+
+      console.log("[v0] User check:", user ? "authenticated" : "not authenticated")
+
       if (!user) {
         throw new Error("You must be logged in to upload")
       }
 
-      let processedFile = file
+      // Get audio duration
       const audio = new Audio()
       audio.src = URL.createObjectURL(file)
       await new Promise((resolve) => {
         audio.onloadedmetadata = resolve
       })
 
-      if (audio.duration > 10) {
-        try {
-          processedFile = await trimAudioTo10Seconds(file)
-        } catch (trimError) {
-          console.warn("Audio trimming failed, using original file:", trimError)
-          // Continue with original file if trimming fails
-        }
-      }
+      console.log("[v0] Audio duration:", audio.duration)
 
       // Create unique filename
-      const fileExt = processedFile.name.split(".").pop()
+      const fileExt = file.name.split(".").pop()
       const fileName = `${user.id}/${Date.now()}.${fileExt}`
 
-      // Upload to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("clips")
-        .upload(fileName, processedFile, {
-          onUploadProgress: (progress) => {
-            setUploadProgress((progress.loaded / progress.total) * 100)
-          },
-        })
+      console.log("[v0] Uploading to storage:", fileName)
 
-      if (uploadError) throw uploadError
+      // Upload to Supabase Storage with progress tracking
+      const { data: uploadData, error: uploadError } = await supabase.storage.from("clips").upload(fileName, file, {
+        onUploadProgress: (progress) => {
+          const percent = (progress.loaded / progress.total) * 100
+          console.log("[v0] Upload progress:", percent)
+          setUploadProgress(percent)
+        },
+      })
+
+      if (uploadError) {
+        console.log("[v0] Upload error:", uploadError)
+        throw uploadError
+      }
+
+      console.log("[v0] Upload successful, getting public URL")
 
       // Get public URL
       const {
@@ -221,19 +180,26 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
 
       const finalDuration = Math.min(Math.round(audio.duration), 10)
 
+      console.log("[v0] Saving to database")
+
       // Save clip metadata to database
       const { error: dbError } = await supabase.from("clips").insert({
         title: title.trim(),
         description: description.trim() || null,
         file_url: publicUrl,
-        file_size: processedFile.size,
+        file_size: file.size,
         duration_seconds: finalDuration,
         user_id: user.id,
       })
 
       URL.revokeObjectURL(audio.src)
 
-      if (dbError) throw dbError
+      if (dbError) {
+        console.log("[v0] Database error:", dbError)
+        throw dbError
+      }
+
+      console.log("[v0] Upload complete!")
 
       setSuccess(true)
       setFile(null)
@@ -246,6 +212,7 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
         router.push("/community")
       }, 2000)
     } catch (error: unknown) {
+      console.log("[v0] Upload failed:", error)
       setError(error instanceof Error ? error.message : "Upload failed")
     } finally {
       setIsUploading(false)
@@ -263,11 +230,11 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
 
   if (success) {
     return (
-      <Card className="border-2 border-green-200 bg-green-50">
+      <Card className="border-2 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
         <CardContent className="p-8 text-center">
-          <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-          <h3 className="text-2xl font-semibold text-green-800 mb-2">Upload Successful!</h3>
-          <p className="text-green-700">Your riff has been shared with the community.</p>
+          <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400 mx-auto mb-4" />
+          <h3 className="text-2xl font-semibold text-green-800 dark:text-green-200 mb-2">Upload Successful!</h3>
+          <p className="text-green-700 dark:text-green-300">Your riff has been shared with the community.</p>
         </CardContent>
       </Card>
     )
@@ -279,10 +246,10 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
       <div
         className={`border-2 border-dashed rounded-xl p-8 transition-all cursor-pointer ${
           isDragOver
-            ? "border-purple-500 bg-purple-100"
+            ? "border-purple-500 bg-purple-100 dark:bg-purple-950"
             : file
-              ? "border-green-300 bg-green-50"
-              : "border-purple-300 bg-gradient-to-br from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100"
+              ? "border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950"
+              : "border-purple-300 bg-gradient-to-br from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 dark:from-purple-950 dark:to-pink-950 dark:hover:from-purple-900 dark:hover:to-pink-900"
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -375,7 +342,7 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
             )}
 
             {error && (
-              <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+              <div className="flex items-center gap-2 p-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-md">
                 <AlertCircle className="w-4 h-4" />
                 {error}
               </div>
