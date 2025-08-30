@@ -6,20 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  Clock,
-  Calendar,
-  Star,
-  MessageCircle,
-  TrendingUp,
-  User,
-  Share2,
-  Copy,
-  Check,
-  Grid3X3,
-  List,
-  Shuffle,
-} from "lucide-react"
+import { Clock, Calendar, Star, TrendingUp, User, Copy, Check, Grid3X3, List, Shuffle, Cloud } from "lucide-react"
 import Link from "next/link"
 import { ReviewModal } from "@/components/review-modal"
 import { createClient } from "@/lib/supabase/client"
@@ -106,31 +93,11 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
     setSelectedClip(clip)
   }
 
-  const handleShare = (clip: ClipWithStats, platform: "twitter" | "facebook" | "discord" | "copy") => {
+  const handleCopyLink = (clip: ClipWithStats) => {
     const clipUrl = `${window.location.origin}/clip/${clip.id}`
-    const shareText = `Check out this amazing riff: "${clip.title}" by ${clip.profiles?.display_name || "Anonymous"}`
-
-    switch (platform) {
-      case "twitter":
-        window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(clipUrl)}`,
-          "_blank",
-        )
-        break
-      case "facebook":
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(clipUrl)}`, "_blank")
-        break
-      case "discord":
-        navigator.clipboard.writeText(`${shareText} ${clipUrl}`)
-        setCopiedClipId(clip.id)
-        setTimeout(() => setCopiedClipId(null), 2000)
-        break
-      case "copy":
-        navigator.clipboard.writeText(clipUrl)
-        setCopiedClipId(clip.id)
-        setTimeout(() => setCopiedClipId(null), 2000)
-        break
-    }
+    navigator.clipboard.writeText(clipUrl)
+    setCopiedClipId(clip.id)
+    setTimeout(() => setCopiedClipId(null), 2000)
   }
 
   if (clips.length === 0) {
@@ -237,7 +204,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={avatarUrl || undefined} alt={displayName} />
-                      <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-sm">
+                      <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-primary-foreground text-sm">
                         {displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -246,7 +213,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                       <p className="text-sm text-gray-600 dark:text-gray-400 truncate">by {displayName}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {clip.avg_rating > 0 && (
                       <Badge
                         variant="secondary"
@@ -257,51 +224,6 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                         {clip.avg_rating.toFixed(1)}
                       </Badge>
                     )}
-                    <div className="relative group">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                      >
-                        <Share2 className="w-4 h-4" />
-                      </Button>
-                      <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 min-w-[140px]">
-                        <div className="p-1">
-                          <button
-                            onClick={() => handleShare(clip, "twitter")}
-                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                          >
-                            <span className="text-blue-500">𝕏</span> Share on X
-                          </button>
-                          <button
-                            onClick={() => handleShare(clip, "facebook")}
-                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                          >
-                            <span className="text-blue-600">f</span> Facebook
-                          </button>
-                          <button
-                            onClick={() => handleShare(clip, "discord")}
-                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                          >
-                            <span className="text-indigo-500">#</span> Discord
-                          </button>
-                          <button
-                            onClick={() => handleShare(clip, "copy")}
-                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                          >
-                            {copiedClipId === clip.id ? (
-                              <>
-                                <Check className="w-4 h-4 text-green-500" /> Copied!
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-4 h-4" /> Copy Link
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </CardHeader>
@@ -311,7 +233,13 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                   <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{clip.description}</p>
                 )}
 
-                <audio controls className="w-full">
+                <audio
+                  controls
+                  className="w-full [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-panel]:dark:bg-gray-700 [&::-webkit-media-controls-play-button]:bg-gray-600 [&::-webkit-media-controls-play-button]:dark:bg-gray-500 [&::-webkit-media-controls-timeline]:bg-gray-600 [&::-webkit-media-controls-timeline]:dark:bg-gray-500"
+                  style={{
+                    filter: "invert(0.8) hue-rotate(180deg)",
+                  }}
+                >
                   <source src={clip.file_url} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>
@@ -329,24 +257,38 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-500" />
+                      <Star className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                       <span className="font-medium">{clip.review_count}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <MessageCircle className="w-4 h-4 text-blue-500" />
+                      <Cloud className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                       <span className="font-medium">{clip.comment_count || 0}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
                   <Button
                     onClick={() => setSelectedClip(clip)}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                    className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-primary-foreground"
                     disabled={!currentUser}
                   >
                     <Star className="w-4 h-4 mr-2" />
                     {currentUser ? "Rate this Riff" : "Login to Rate"}
+                  </Button>
+
+                  <Button onClick={() => handleCopyLink(clip)} variant="outline" size="sm" className="w-full">
+                    {copiedClipId === clip.id ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2 text-green-500" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copy Link
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>

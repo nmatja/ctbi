@@ -11,7 +11,7 @@ import { Waves, Music2, TreePine } from "lucide-react"
 import Link from "next/link"
 
 export default async function MyClipsPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   let user = null
   let clips = null
