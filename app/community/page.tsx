@@ -2,9 +2,9 @@ import { createClient } from "@/lib/supabase/server"
 import { UserMenu } from "@/components/user-menu"
 import { CommunityFeed } from "@/components/community-feed"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Footer } from "@/components/footer" // Added footer import
+import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { Music } from "lucide-react"
+import { TreePine, Waves } from "lucide-react"
 import Link from "next/link"
 
 interface PageProps {
@@ -77,21 +77,28 @@ export default async function CommunityPage({ searchParams }: PageProps) {
   const hasPrevPage = page > 1
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-orange-50 to-pink-50 dark:from-purple-950 dark:via-slate-900 dark:to-pink-950 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-orange-950 dark:via-yellow-950 dark:to-red-950 flex flex-col relative overflow-hidden">
+      {/* Musical Background Pattern */}
+      <div className="absolute inset-0 opacity-5 dark:opacity-10 pointer-events-none">
+        <div className="absolute top-20 left-10 text-6xl">🎸</div>
+        <div className="absolute top-40 right-20 text-4xl">🎵</div>
+        <div className="absolute bottom-40 left-20 text-5xl">🎶</div>
+        <div className="absolute bottom-20 right-10 text-3xl">🎸</div>
+        <div className="absolute top-60 left-1/2 text-4xl">🎵</div>
+        <div className="absolute bottom-60 right-1/3 text-5xl">🎶</div>
+      </div>
+
       {/* Header */}
-      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full">
+      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full relative z-10">
         {/* Logo Section - Left */}
         <div className="flex items-center gap-3">
-          <Button asChild variant="ghost">
-            <Link href="/">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <Music className="w-6 h-6 text-white" />
-              </div>
+          <Button asChild variant="ghost" className="text-primary hover:text-primary/80">
+            <Link href="/" className="flex items-center gap-2">
+              <TreePine className="w-6 h-6" />
+              <Waves className="w-6 h-6" />
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Could that be it?
-          </h1>
+          <h1 className="text-2xl font-light text-primary">Could that be it?</h1>
         </div>
 
         {/* Explore Section - Center */}
@@ -99,7 +106,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
           <Button
             asChild
             variant="ghost"
-            className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+            className="bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 font-medium px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Link href="/community">Explore</Link>
           </Button>
@@ -111,14 +118,14 @@ export default async function CommunityPage({ searchParams }: PageProps) {
           <UserMenu />
         </div>
       </header>
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-8">
-        {/* Added flex-1 to push footer to bottom */}
+
+      <main className="flex-1 max-w-7xl mx-auto px-6 py-8 relative z-10">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Community Riffs</h2>
-          <p className="text-gray-600 dark:text-gray-300">
+          <h2 className="text-2xl font-bold text-foreground mb-2">Community Riffs</h2>
+          <p className="text-muted-foreground">
             Listen to amazing riffs and help fellow musicians improve with your feedback
           </p>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Showing {clipsWithStats?.length || 0} of {count || 0} total riffs (Page {page} of {totalPages})
           </p>
         </div>
@@ -145,7 +152,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
                     asChild
                     variant={pageNum === page ? "default" : "outline"}
                     size="sm"
-                    className={pageNum === page ? "bg-gradient-to-r from-purple-600 to-pink-600" : ""}
+                    className={pageNum === page ? "bg-gradient-to-r from-orange-500 to-red-500 text-white" : ""}
                   >
                     <Link href={`/community?page=${pageNum}`}>{pageNum}</Link>
                   </Button>
@@ -164,7 +171,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
           </div>
         )}
       </main>
-      <Footer /> {/* Added footer component */}
+      <Footer />
     </div>
   )
 }
