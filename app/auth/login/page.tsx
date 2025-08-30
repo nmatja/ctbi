@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Chrome } from "lucide-react"
+import { Chrome, ArrowLeft, Guitar } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -59,20 +59,29 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-orange-50 to-pink-50 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="absolute top-6 left-6">
+        <Link
+          href="/community"
+          className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <Guitar className="w-4 h-4" />
+          Explore
+        </Link>
+      </div>
+
       <div className="w-full max-w-md">
         <Card className="border-2 shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Welcome Back
-            </CardTitle>
+            <CardTitle className="text-3xl font-bold text-primary">Welcome Back</CardTitle>
             <CardDescription className="text-lg">Sign in to share your riffs with the community</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <Button
               onClick={handleGoogleLogin}
               disabled={isLoading}
-              className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold"
+              className="w-full h-12 bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 text-white font-semibold shadow-lg"
             >
               <Chrome className="mr-2 h-5 w-5" />
               Continue with Google
@@ -114,7 +123,11 @@ export default function LoginPage() {
               {error && (
                 <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{error}</div>
               )}
-              <Button type="submit" className="w-full h-12 bg-transparent" disabled={isLoading} variant="outline">
+              <Button
+                type="submit"
+                className="w-full h-12 bg-primary hover:bg-primary/80 text-white font-semibold"
+                disabled={isLoading}
+              >
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
@@ -123,7 +136,7 @@ export default function LoginPage() {
               Don't have an account?{" "}
               <Link
                 href="/auth/signup"
-                className="font-semibold text-purple-600 hover:text-purple-700 underline underline-offset-4"
+                className="font-semibold text-primary hover:text-primary/80 underline underline-offset-4"
               >
                 Sign up
               </Link>
