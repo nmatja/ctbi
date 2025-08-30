@@ -77,17 +77,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
   const hasPrevPage = page > 1
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-orange-950 dark:via-yellow-950 dark:to-red-950 flex flex-col relative overflow-hidden">
-      {/* Musical Background Pattern */}
-      <div className="absolute inset-0 opacity-5 dark:opacity-10 pointer-events-none">
-        <div className="absolute top-20 left-10 text-6xl">🎸</div>
-        <div className="absolute top-40 right-20 text-4xl">🎵</div>
-        <div className="absolute bottom-40 left-20 text-5xl">🎶</div>
-        <div className="absolute bottom-20 right-10 text-3xl">🎸</div>
-        <div className="absolute top-60 left-1/2 text-4xl">🎵</div>
-        <div className="absolute bottom-60 right-1/3 text-5xl">🎶</div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col relative overflow-hidden">
       {/* Header */}
       <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full relative z-10">
         {/* Logo Section - Left */}
@@ -121,11 +111,11 @@ export default async function CommunityPage({ searchParams }: PageProps) {
 
       <main className="flex-1 max-w-7xl mx-auto px-6 py-8 relative z-10">
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Community Riffs</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Community Riffs</h2>
+          <p className="text-gray-600 dark:text-gray-300">
             Listen to amazing riffs and help fellow musicians improve with your feedback
           </p>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Showing {clipsWithStats?.length || 0} of {count || 0} total riffs (Page {page} of {totalPages})
           </p>
         </div>
@@ -136,7 +126,11 @@ export default async function CommunityPage({ searchParams }: PageProps) {
               asChild
               variant="outline"
               disabled={!hasPrevPage}
-              className={!hasPrevPage ? "opacity-50 cursor-not-allowed" : ""}
+              className={
+                !hasPrevPage
+                  ? "opacity-50 cursor-not-allowed"
+                  : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+              }
             >
               <Link href={`/community?page=${page - 1}`}>Previous</Link>
             </Button>
@@ -152,7 +146,11 @@ export default async function CommunityPage({ searchParams }: PageProps) {
                     asChild
                     variant={pageNum === page ? "default" : "outline"}
                     size="sm"
-                    className={pageNum === page ? "bg-gradient-to-r from-orange-500 to-red-500 text-white" : ""}
+                    className={
+                      pageNum === page
+                        ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
+                        : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                    }
                   >
                     <Link href={`/community?page=${pageNum}`}>{pageNum}</Link>
                   </Button>
@@ -164,7 +162,11 @@ export default async function CommunityPage({ searchParams }: PageProps) {
               asChild
               variant="outline"
               disabled={!hasNextPage}
-              className={!hasNextPage ? "opacity-50 cursor-not-allowed" : ""}
+              className={
+                !hasNextPage
+                  ? "opacity-50 cursor-not-allowed"
+                  : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+              }
             >
               <Link href={`/community?page=${page + 1}`}>Next</Link>
             </Button>
