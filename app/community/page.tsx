@@ -77,18 +77,22 @@ export default async function CommunityPage({ searchParams }: PageProps) {
   const hasPrevPage = page > 1
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col relative overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full relative z-10">
+      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full relative z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg mx-4 mt-4 border border-orange-200/50 dark:border-gray-700/50">
         {/* Logo Section - Left */}
         <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" className="text-primary hover:text-primary/80">
+          <Button
+            asChild
+            variant="ghost"
+            className="text-primary hover:text-primary/80 dark:text-orange-400 dark:hover:text-orange-300"
+          >
             <Link href="/" className="flex items-center gap-2">
               <TreePine className="w-6 h-6" />
               <Waves className="w-6 h-6" />
             </Link>
           </Button>
-          <h1 className="text-2xl font-light bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-light bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 dark:from-orange-400 dark:via-orange-300 dark:to-yellow-300 bg-clip-text text-transparent">
             Could that be it?
           </h1>
         </div>
@@ -98,7 +102,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
           <Button
             asChild
             variant="ghost"
-            className="bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 font-medium px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 dark:from-orange-600 dark:via-red-600 dark:to-yellow-600 text-white hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 dark:hover:from-orange-700 dark:hover:via-red-700 dark:hover:to-yellow-700 font-medium px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Link href="/community">Explore</Link>
           </Button>
@@ -112,23 +116,27 @@ export default async function CommunityPage({ searchParams }: PageProps) {
       </header>
 
       <main className="flex-1 max-w-7xl mx-auto px-6 py-8 relative z-10">
-        <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Community Riffs</h2>
-          <p className="text-muted-foreground">
+        <div className="mb-8 text-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-orange-200/50 dark:border-gray-700/50">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Community Riffs</h2>
+          <p className="text-gray-600 dark:text-gray-300">
             Listen to amazing riffs and help fellow musicians improve with your feedback
           </p>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Showing {clipsWithStats?.length || 0} of {count || 0} total riffs (Page {page} of {totalPages})
           </p>
         </div>
         <CommunityFeed clips={clipsWithStats || []} />
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-4 mt-12">
+          <div className="flex justify-center items-center gap-4 mt-12 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-orange-200/50 dark:border-gray-700/50">
             <Button
               asChild
               variant="outline"
               disabled={!hasPrevPage}
-              className={!hasPrevPage ? "opacity-50 cursor-not-allowed" : "border-border text-foreground"}
+              className={
+                !hasPrevPage
+                  ? "opacity-50 cursor-not-allowed"
+                  : "border-orange-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700"
+              }
             >
               <Link href={`/community?page=${page - 1}`}>Previous</Link>
             </Button>
@@ -146,8 +154,8 @@ export default async function CommunityPage({ searchParams }: PageProps) {
                     size="sm"
                     className={
                       pageNum === page
-                        ? "bg-gradient-to-r from-orange-500 to-red-500 text-white"
-                        : "border-border text-foreground"
+                        ? "bg-gradient-to-r from-orange-500 to-red-500 dark:from-orange-600 dark:to-red-600 text-white"
+                        : "border-orange-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700"
                     }
                   >
                     <Link href={`/community?page=${pageNum}`}>{pageNum}</Link>
@@ -160,7 +168,11 @@ export default async function CommunityPage({ searchParams }: PageProps) {
               asChild
               variant="outline"
               disabled={!hasNextPage}
-              className={!hasNextPage ? "opacity-50 cursor-not-allowed" : "border-border text-foreground"}
+              className={
+                !hasNextPage
+                  ? "opacity-50 cursor-not-allowed"
+                  : "border-orange-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700"
+              }
             >
               <Link href={`/community?page=${page + 1}`}>Next</Link>
             </Button>

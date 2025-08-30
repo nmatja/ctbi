@@ -102,15 +102,15 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
 
   if (clips.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="w-24 h-24 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="text-center py-12 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl border border-orange-200/50 dark:border-gray-700/50">
+        <div className="w-24 h-24 bg-gradient-to-r from-orange-500 to-red-500 dark:from-orange-600 dark:to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
           <User className="w-12 h-12 text-white" />
         </div>
         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">No riffs yet</h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Be the first to share a riff with the community!</p>
+        <p className="text-gray-600 dark:text-gray-300 mb-6">Be the first to share a riff with the community!</p>
         <Button
           asChild
-          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+          className="bg-gradient-to-r from-orange-500 to-red-500 dark:from-orange-600 dark:to-red-600 hover:from-orange-600 hover:to-red-600 dark:hover:from-orange-700 dark:hover:to-red-700 text-white"
         >
           <Link href="/">Upload Your First Riff</Link>
         </Button>
@@ -120,8 +120,8 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <p className="text-gray-600 dark:text-gray-400">
+      <div className="flex items-center justify-between flex-wrap gap-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 border border-orange-200/50 dark:border-gray-700/50">
+        <p className="text-gray-600 dark:text-gray-300">
           {clips.length} riff{clips.length !== 1 ? "s" : ""} in the community
         </p>
         <div className="flex items-center gap-4">
@@ -129,22 +129,22 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
             onClick={handleRandomClip}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 bg-transparent"
+            className="flex items-center gap-2 bg-white/80 dark:bg-gray-700/80 border-orange-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-600"
             disabled={!currentUser}
           >
             <Shuffle className="w-4 h-4" />
             {currentUser ? "Random Riff" : "Login for Random"}
           </Button>
 
-          <div className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-1 bg-white/50 dark:bg-gray-800/50">
+          <div className="flex items-center gap-1 border border-orange-200 dark:border-gray-600 rounded-lg p-1 bg-white/80 dark:bg-gray-700/80">
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("grid")}
               className={`h-8 w-8 p-0 ${
                 viewMode === "grid"
-                  ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                  ? "bg-gradient-to-r from-orange-500 to-red-500 dark:from-orange-600 dark:to-red-600 hover:from-orange-600 hover:to-red-600 dark:hover:from-orange-700 dark:hover:to-red-700 text-white"
+                  : "hover:bg-orange-100 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
               }`}
             >
               <Grid3X3 className="w-4 h-4" />
@@ -155,8 +155,8 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
               onClick={() => setViewMode("list")}
               className={`h-8 w-8 p-0 ${
                 viewMode === "list"
-                  ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                  ? "bg-gradient-to-r from-orange-500 to-red-500 dark:from-orange-600 dark:to-red-600 hover:from-orange-600 hover:to-red-600 dark:hover:from-orange-700 dark:hover:to-red-700 text-white"
+                  : "hover:bg-orange-100 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
               }`}
             >
               <List className="w-4 h-4" />
@@ -164,25 +164,34 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">Sort by:</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">Sort by:</span>
             <Select value={sortBy} onValueChange={(value: "newest" | "oldest" | "popular") => setSortBy(value)}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40 bg-white/80 dark:bg-gray-700/80 border-orange-200 dark:border-gray-600 text-gray-700 dark:text-gray-200">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">
+              <SelectContent className="bg-white dark:bg-gray-800 border-orange-200 dark:border-gray-600">
+                <SelectItem
+                  value="newest"
+                  className="text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700"
+                >
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Newest First
                   </div>
                 </SelectItem>
-                <SelectItem value="oldest">
+                <SelectItem
+                  value="oldest"
+                  className="text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700"
+                >
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     Oldest First
                   </div>
                 </SelectItem>
-                <SelectItem value="popular">
+                <SelectItem
+                  value="popular"
+                  className="text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-gray-700"
+                >
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
                     Most Popular
@@ -203,29 +212,29 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
           return (
             <Card
               key={clip.id}
-              className={`hover:shadow-lg transition-all duration-200 bg-white/95 backdrop-blur-sm border-gray-200 hover:bg-white dark:bg-gray-800/95 dark:border-gray-600 dark:hover:bg-gray-900 hover:shadow-orange-200/20 dark:hover:shadow-gray-900/50 ${
+              className={`hover:shadow-lg transition-all duration-200 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-orange-200/50 dark:border-gray-600/50 hover:bg-white dark:hover:bg-gray-700/95 hover:shadow-orange-200/20 dark:hover:shadow-gray-900/50 hover:border-orange-300 dark:hover:border-gray-500 ${
                 viewMode === "list" ? "flex" : ""
               }`}
             >
               <CardHeader className={`pb-4 ${viewMode === "list" ? "flex-shrink-0 w-64" : ""}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <Avatar className="h-10 w-10 ring-2 ring-orange-200 dark:ring-orange-500/30">
+                    <Avatar className="h-10 w-10 ring-2 ring-orange-200 dark:ring-orange-500/50">
                       <AvatarImage src={avatarUrl || undefined} alt={displayName} />
-                      <AvatarFallback className="bg-gradient-to-br from-orange-400 to-red-500 text-white text-sm">
+                      <AvatarFallback className="bg-gradient-to-br from-orange-400 to-red-500 dark:from-orange-500 dark:to-red-600 text-white text-sm">
                         {displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{clip.title}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">by {displayName}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 truncate">by {displayName}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {clip.avg_rating > 0 && (
                       <Badge
                         variant="secondary"
-                        className="bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:border-yellow-700 cursor-pointer hover:bg-yellow-200 dark:hover:bg-yellow-800/70 transition-colors"
+                        className="bg-yellow-100 dark:bg-yellow-900/60 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700/50 cursor-pointer hover:bg-yellow-200 dark:hover:bg-yellow-800/80 transition-colors"
                         onClick={() => handleRatingClick(clip)}
                       >
                         <Star className="w-3 h-3 mr-1 fill-current" />
@@ -243,7 +252,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
 
                 <audio
                   controls
-                  className="w-full h-10 bg-gray-100 dark:bg-gray-700 rounded-lg [&::-webkit-media-controls-panel]:bg-gray-100 [&::-webkit-media-controls-panel]:dark:bg-gray-700"
+                  className="w-full h-10 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 [&::-webkit-media-controls-panel]:bg-gray-100 [&::-webkit-media-controls-panel]:dark:bg-gray-700"
                 >
                   <source src={clip.file_url} type="audio/mpeg" />
                   Your browser does not support the audio element.
@@ -275,7 +284,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                 <div className="flex flex-col gap-2">
                   <Button
                     onClick={() => setSelectedClip(clip)}
-                    className="w-full bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 text-white border-0"
+                    className="w-full bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 dark:from-orange-600 dark:via-red-600 dark:to-yellow-600 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 dark:hover:from-orange-700 dark:hover:via-red-700 dark:hover:to-yellow-700 text-white border-0"
                     disabled={!currentUser}
                   >
                     <Star className="w-4 h-4 mr-2" />
@@ -286,11 +295,11 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                     onClick={() => handleCopyLink(clip)}
                     variant="outline"
                     size="sm"
-                    className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-gray-800/80"
+                    className="w-full border-orange-300 dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 bg-white/90 dark:bg-gray-800/90"
                   >
                     {copiedClipId === clip.id ? (
                       <>
-                        <Check className="w-4 h-4 mr-2 text-green-500" />
+                        <Check className="w-4 h-4 mr-2 text-green-500 dark:text-green-400" />
                         Copied!
                       </>
                     ) : (
