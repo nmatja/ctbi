@@ -1,236 +1,125 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import { createBrowserClient } from "@/lib/supabase/client"
+import type { User } from "@supabase/supabase-js"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { UserMenu } from "@/components/user-menu"
+import { UploadDropzone } from "@/components/upload-dropzone"
+import Link from "next/link"
+
 export default function HomePage() {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createBrowserClient()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
+    }
+
+    getUser()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase.auth])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-orange-100 to-pink-100 flex items-center justify-center">
+        <div className="text-2xl font-semibold text-gray-700">Loading...</div>
+      </div>
+    )
+  }
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #f3e8ff 0%, #fed7aa 50%, #fce7f3 100%)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}
-    >
-      {/* Header */}
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "24px",
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div
-            style={{
-              width: "40px",
-              height: "40px",
-              background: "linear-gradient(45deg, #9333ea, #ec4899)",
-              borderRadius: "8px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: "20px",
-            }}
-          >
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-orange-100 to-pink-100">
+      <header className="flex items-center justify-between p-6 max-w-6xl mx-auto">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white text-xl">
             🎵
           </div>
-          <h1
-            style={{
-              fontSize: "32px",
-              fontWeight: "bold",
-              background: "linear-gradient(45deg, #9333ea, #ec4899)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              margin: 0,
-            }}
-          >
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             Could that be it?
           </h1>
         </div>
-        {/* <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="flex items-center gap-3">
           <ThemeToggle />
           <UserMenu />
-        </div> */}
+        </div>
       </header>
 
       {/* Main Content */}
-      <main
-        style={{
-          maxWidth: "800px",
-          margin: "0 auto",
-          padding: "48px 24px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ marginBottom: "48px" }}>
-          <h2
-            style={{
-              fontSize: "48px",
-              fontWeight: "bold",
-              color: "#1f2937",
-              lineHeight: "1.2",
-              marginBottom: "16px",
-            }}
-          >
+      <main className="max-w-4xl mx-auto px-6 py-12 text-center">
+        <div className="mb-12">
+          <h2 className="text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
             Share Your{" "}
-            <span
-              style={{
-                background: "linear-gradient(45deg, #9333ea, #ec4899)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Musical Magic
             </span>
           </h2>
-          <p
-            style={{
-              fontSize: "20px",
-              color: "#6b7280",
-              maxWidth: "600px",
-              margin: "0 auto",
-              lineHeight: "1.6",
-            }}
-          >
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
             Upload your guitar riffs, get feedback from fellow musicians, and discover amazing sounds from the
             community.
           </p>
         </div>
 
-        {/* Upload Section */}
-        <div
-          style={{
-            background: "rgba(255, 255, 255, 0.8)",
-            borderRadius: "16px",
-            border: "2px solid #e5e7eb",
-            padding: "48px",
-            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
-            marginBottom: "48px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              marginBottom: "16px",
-            }}
-          >
-            <span style={{ fontSize: "24px" }}>✨</span>
-            <h3
-              style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#1f2937",
-                margin: 0,
-              }}
-            >
-              Upload New Riff Here
-            </h3>
-            <span style={{ fontSize: "24px" }}>✨</span>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border-2 border-gray-200 dark:border-gray-700 p-12 shadow-2xl mb-12">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="text-2xl">✨</span>
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">Upload New Riff Here</h3>
+            <span className="text-2xl">✨</span>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: "24px",
-            }}
-          >
-            <div style={{ fontSize: "32px", animation: "bounce 1s infinite" }}>⬇️</div>
+          <div className="flex justify-center mb-6">
+            <div className="text-3xl animate-bounce">⬇️</div>
           </div>
 
-          {/* {user ? (
+          {user ? (
             <UploadDropzone />
-          ) : ( */}
-          <div
-            style={{
-              border: "2px dashed #d1d5db",
-              borderRadius: "12px",
-              padding: "48px",
-              background: "linear-gradient(135deg, #f3e8ff, #fce7f3)",
-            }}
-          >
-            <div style={{ textAlign: "center" }}>
-              <div
-                style={{
-                  width: "64px",
-                  height: "64px",
-                  background: "linear-gradient(45deg, #9333ea, #ec4899)",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 16px",
-                  fontSize: "32px",
-                }}
-              >
-                🎸
-              </div>
-              <div>
-                <p
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "600",
-                    color: "#1f2937",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Coming Soon: Upload Your Riffs
-                </p>
-                <p
-                  style={{
-                    color: "#6b7280",
-                    margin: 0,
-                  }}
-                >
-                  We're building an amazing platform for musicians to share and discover music
-                </p>
+          ) : (
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-12 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                  🎸
+                </div>
+                <div>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Sign in to Upload Your Riffs
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">
+                    Join our community of musicians and start sharing your music
+                  </p>
+                  <Link
+                    href="/auth/login"
+                    className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold px-6 py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200"
+                  >
+                    Sign In to Upload
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-          {/* )} */}
+          )}
         </div>
 
-        {/* Community Link */}
         <div>
-          <div
-            style={{
-              display: "inline-block",
-              background: "linear-gradient(45deg, #f97316, #ef4444)",
-              color: "white",
-              fontWeight: "600",
-              padding: "12px 32px",
-              fontSize: "18px",
-              borderRadius: "8px",
-              textDecoration: "none",
-              cursor: "pointer",
-            }}
+          <Link
+            href="/community"
+            className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-8 py-3 text-lg rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200"
           >
-            🎵 Explore Community Riffs (Coming Soon)
-          </div>
+            🎵 Explore Community Riffs
+          </Link>
         </div>
       </main>
-
-      <style jsx>{`
-        @keyframes bounce {
-          0%, 20%, 53%, 80%, 100% {
-            transform: translate3d(0,0,0);
-          }
-          40%, 43% {
-            transform: translate3d(0,-30px,0);
-          }
-          70% {
-            transform: translate3d(0,-15px,0);
-          }
-          90% {
-            transform: translate3d(0,-4px,0);
-          }
-        }
-      `}</style>
     </div>
   )
 }
