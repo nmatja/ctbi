@@ -49,9 +49,11 @@ export default function HomePage() {
       <header className="flex items-center justify-between p-6 max-w-6xl mx-auto w-full">
         {/* Logo section - Left */}
         <div className="flex items-center gap-3 flex-1">
-          <h1 className="text-3xl font-light bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
-            Could that be it?
-          </h1>
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            <h1 className="text-3xl font-light bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+              Could that be it?
+            </h1>
+          </Link>
         </div>
 
         {/* Explore button - Center */}

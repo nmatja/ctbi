@@ -106,14 +106,40 @@ export function LatestActivity() {
     fetchLatestActivity()
   }, [supabase])
 
-  const getProtectedDisplayName = () => "Protected User"
-
-  const handleClickToListen = (activity: ActivityItem) => {
+  const getProtectedDisplayName = (userId: string) => {
     if (currentUser) {
-      return "/community"
-    } else {
-      return "/auth/login"
+      const profile = activities.find((a) => a.user_display_name)?.user_display_name
+      return profile || "Anonymous"
     }
+    return "Protected User"
+  }
+
+  const getDisplayName = (activity: ActivityItem) => {
+    if (currentUser) {
+      return activity.user_display_name
+    }
+    return "Protected User"
+  }
+
+  const getAvatar = (activity: ActivityItem) => {
+    if (currentUser && activity.user_avatar) {
+      return (
+        <Avatar className="w-10 h-10">
+          <img
+            src={activity.user_avatar || "/placeholder.svg"}
+            alt={activity.user_display_name}
+            className="w-full h-full object-cover rounded-full"
+          />
+        </Avatar>
+      )
+    }
+    return (
+      <Avatar className="w-10 h-10 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+          <Shield className="w-5 h-5 text-white" />
+        </div>
+      </Avatar>
+    )
   }
 
   if (loading) {
@@ -164,11 +190,7 @@ export function LatestActivity() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 flex-1">
-                      <Avatar className="w-10 h-10 relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                          <Shield className="w-5 h-5 text-white" />
-                        </div>
-                      </Avatar>
+                      {getAvatar(activity)}
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
@@ -177,7 +199,7 @@ export function LatestActivity() {
                           {activity.type === "comment" && <MessageCircle className="w-4 h-4 text-red-600" />}
 
                           <span className="text-sm font-medium text-gray-900 dark:text-white">
-                            {getProtectedDisplayName()}
+                            {getDisplayName(activity)}
                           </span>
 
                           <span className="text-xs text-gray-600 dark:text-gray-400">
@@ -196,7 +218,7 @@ export function LatestActivity() {
                             variant="link"
                             className="p-0 h-auto text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
                           >
-                            <Link href={handleClickToListen(activity)}>{" Click to listen"}</Link>
+                            <Link href={"/community"}>{" Click to listen"}</Link>
                           </Button>
                         </p>
                       </div>
