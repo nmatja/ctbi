@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Clock, Calendar, Star, MessageCircle, TrendingUp, User } from "lucide-react"
 import Link from "next/link"
+import { ReviewModal } from "@/components/review-modal"
+import { createClient } from "@/lib/supabase/client"
 
 interface ClipWithStats {
   id: string
@@ -31,6 +33,19 @@ interface CommunityFeedProps {
 
 export function CommunityFeed({ clips }: CommunityFeedProps) {
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "popular">("newest")
+  const [selectedClip, setSelectedClip] = useState<ClipWithStats | null>(null)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      setCurrentUser(user)
+    }
+    getCurrentUser()
+  }, [])
 
   const sortedClips = useMemo(() => {
     const clipsCopy = [...clips]
@@ -42,7 +57,6 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
         return clipsCopy.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
       case "popular":
         return clipsCopy.sort((a, b) => {
-          // Sort by average rating first, then by review count
           if (b.avg_rating !== a.avg_rating) {
             return b.avg_rating - a.avg_rating
           }
@@ -73,7 +87,6 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
 
   return (
     <div className="space-y-6">
-      {/* Sorting Controls */}
       <div className="flex items-center justify-between">
         <p className="text-gray-600">
           {clips.length} riff{clips.length !== 1 ? "s" : ""} in the community
@@ -108,7 +121,6 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
         </div>
       </div>
 
-      {/* Clips Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedClips.map((clip) => {
           const profile = clip.profiles
@@ -168,13 +180,12 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
 
                 <div className="flex gap-2">
                   <Button
-                    asChild
+                    onClick={() => setSelectedClip(clip)}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                    disabled={!currentUser}
                   >
-                    <Link href={`/clip/${clip.id}`}>
-                      <Star className="w-4 h-4 mr-2" />
-                      Rate this Riff
-                    </Link>
+                    <Star className="w-4 h-4 mr-2" />
+                    {currentUser ? "Rate this Riff" : "Login to Rate"}
                   </Button>
                 </div>
               </CardContent>
@@ -182,6 +193,13 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
           )
         })}
       </div>
+
+      <ReviewModal
+        isOpen={!!selectedClip}
+        onClose={() => setSelectedClip(null)}
+        clip={selectedClip}
+        currentUser={currentUser}
+      />
     </div>
   )
 }
