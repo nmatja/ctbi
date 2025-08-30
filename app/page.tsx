@@ -6,6 +6,7 @@ import type { User } from "@supabase/supabase-js"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { UserMenu } from "@/components/user-menu"
 import { UploadDropzone } from "@/components/upload-dropzone"
+import { Footer } from "@/components/footer" // Added footer import
 import { Music, ArrowDown } from "lucide-react"
 import Link from "next/link"
 
@@ -43,7 +44,9 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+      {" "}
+      {/* Added flex flex-col for footer positioning */}
       <header className="flex items-center justify-between p-6 max-w-6xl mx-auto">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
@@ -56,9 +59,10 @@ export default function HomePage() {
           <UserMenu />
         </div>
       </header>
-
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12 text-center">
+      <main className="flex-1 max-w-4xl mx-auto px-6 py-12 text-center">
+        {" "}
+        {/* Added flex-1 to push footer to bottom */}
         <div className="mb-12">
           <h2 className="text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
             Share Your{" "}
@@ -71,7 +75,6 @@ export default function HomePage() {
             community.
           </p>
         </div>
-
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-12 shadow-lg mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Music className="w-6 h-6 text-purple-600" />
@@ -109,7 +112,6 @@ export default function HomePage() {
             </div>
           )}
         </div>
-
         <div>
           <Link
             href="/community"
@@ -120,6 +122,7 @@ export default function HomePage() {
           </Link>
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

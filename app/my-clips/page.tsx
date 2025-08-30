@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { UserMenu } from "@/components/user-menu"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { UploadDropzone } from "@/components/upload-dropzone"
+import { Footer } from "@/components/footer" // Added footer import
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Music, Clock, Calendar } from "lucide-react"
@@ -26,7 +27,9 @@ export default async function MyClipsPage() {
     .order("created_at", { ascending: false })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-orange-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-orange-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 flex flex-col">
+      {" "}
+      {/* Added flex flex-col for footer positioning */}
       {/* Header */}
       <header className="flex items-center justify-between p-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
@@ -46,8 +49,9 @@ export default async function MyClipsPage() {
           <UserMenu />
         </div>
       </header>
-
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="flex-1 max-w-6xl mx-auto px-6 py-8">
+        {" "}
+        {/* Added flex-1 to push footer to bottom */}
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Upload Section */}
           <div className="space-y-6">
@@ -106,6 +110,7 @@ export default async function MyClipsPage() {
           </div>
         </div>
       </main>
+      <Footer /> {/* Added footer component */}
     </div>
   )
 }

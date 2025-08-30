@@ -9,10 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LogOut, Music } from "lucide-react"
+import { LogOut, Music, Edit3 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState, useCallback } from "react" // Added useCallback
+import { useEffect, useState, useCallback } from "react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 interface Profile {
@@ -24,6 +26,9 @@ export function UserMenu() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isEditingNickname, setIsEditingNickname] = useState(false)
+  const [newNickname, setNewNickname] = useState("")
+  const [isUpdating, setIsUpdating] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -39,44 +44,90 @@ export function UserMenu() {
     [supabase],
   )
 
-  useEffect(() => {
-    let mounted = true // Added mounted flag to prevent state updates after unmount
-
-    const getUser = async () => {
+  const getUser = useCallback(async () => {
+    try {
       const {
         data: { user },
+        error,
       } = await supabase.auth.getUser()
 
-      if (!mounted) return // Prevent state update if component unmounted
+      if (error) {
+        console.log("[v0] Auth error:", error.message)
+        // Retry once after a short delay
+        setTimeout(async () => {
+          const {
+            data: { user: retryUser },
+          } = await supabase.auth.getUser()
+          setUser(retryUser)
+          if (retryUser) {
+            await fetchProfile(retryUser.id)
+          }
+          setLoading(false)
+        }, 1000)
+        return
+      }
 
       setUser(user)
-
       if (user) {
         await fetchProfile(user.id)
       }
       setLoading(false)
+    } catch (error) {
+      console.log("[v0] Session fetch error:", error)
+      setLoading(false)
     }
+  }, [supabase, fetchProfile])
+
+  useEffect(() => {
+    let mounted = true
 
     getUser()
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return // Prevent state update if component unmounted
+      if (!mounted) return
 
+      console.log("[v0] Auth state change:", event)
       setUser(session?.user ?? null)
       if (session?.user) {
         await fetchProfile(session.user.id)
       } else {
         setProfile(null)
       }
+      setLoading(false)
     })
 
     return () => {
-      mounted = false // Set mounted to false on cleanup
+      mounted = false
       subscription.unsubscribe()
     }
-  }, [supabase, fetchProfile])
+  }, [supabase, fetchProfile, getUser])
+
+  const handleUpdateNickname = async () => {
+    if (!user || !newNickname.trim() || newNickname.trim().length < 2) return
+
+    setIsUpdating(true)
+    try {
+      const { error } = await supabase.from("profiles").upsert({
+        id: user.id,
+        display_name: newNickname.trim(),
+        updated_at: new Date().toISOString(),
+      })
+
+      if (error) {
+        console.error("Error updating nickname:", error)
+      } else {
+        setProfile((prev) => (prev ? { ...prev, display_name: newNickname.trim() } : null))
+        setIsEditingNickname(false)
+        setNewNickname("")
+      }
+    } catch (error) {
+      console.error("Error updating nickname:", error)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -114,11 +165,58 @@ export function UserMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
-        <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium">{displayName}</p>
-            <p className="w-[200px] truncate text-sm text-muted-foreground">{user.email}</p>
+        <div className="flex items-center justify-between gap-2 p-2">
+          <div className="flex items-center gap-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={avatarUrl || undefined} alt={displayName} />
+              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-xs">
+                {displayName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col space-y-1 leading-none">
+              <p className="font-medium text-sm">{displayName}</p>
+              <p className="w-[140px] truncate text-xs text-muted-foreground">{user.email}</p>
+            </div>
           </div>
+          <Dialog open={isEditingNickname} onOpenChange={setIsEditingNickname}>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0 opacity-60 hover:opacity-100"
+                onClick={() => {
+                  setNewNickname(displayName)
+                  setIsEditingNickname(true)
+                }}
+              >
+                <Edit3 className="h-3 w-3" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Nickname</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Input
+                  value={newNickname}
+                  onChange={(e) => setNewNickname(e.target.value)}
+                  placeholder="Enter your nickname"
+                  maxLength={50}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsEditingNickname(false)} disabled={isUpdating}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleUpdateNickname}
+                    disabled={isUpdating || !newNickname.trim() || newNickname.trim().length < 2}
+                  >
+                    {isUpdating ? "Updating..." : "Update"}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push("/my-clips")}>
