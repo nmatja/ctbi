@@ -136,12 +136,16 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
             {currentUser ? "Random Riff" : "Login for Random"}
           </Button>
 
-          <div className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-1">
+          <div className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-1 bg-white/50 dark:bg-gray-800/50">
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("grid")}
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 ${
+                viewMode === "grid"
+                  ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
             >
               <Grid3X3 className="w-4 h-4" />
             </Button>
@@ -149,7 +153,11 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
               variant={viewMode === "list" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("list")}
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 ${
+                viewMode === "list"
+                  ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
             >
               <List className="w-4 h-4" />
             </Button>
@@ -195,7 +203,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
           return (
             <Card
               key={clip.id}
-              className={`hover:shadow-lg transition-all duration-200 bg-white/95 backdrop-blur-sm border-gray-200 hover:bg-white dark:bg-gray-800/95 dark:border-gray-700 dark:hover:bg-gray-800 hover:shadow-orange-200/20 dark:hover:shadow-gray-900/50 ${
+              className={`hover:shadow-lg transition-all duration-200 bg-white/95 backdrop-blur-sm border-gray-200 hover:bg-white dark:bg-gray-800/95 dark:border-gray-600 dark:hover:bg-gray-900 hover:shadow-orange-200/20 dark:hover:shadow-gray-900/50 ${
                 viewMode === "list" ? "flex" : ""
               }`}
             >
@@ -278,7 +286,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                     onClick={() => handleCopyLink(clip)}
                     variant="outline"
                     size="sm"
-                    className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-gray-800/80"
                   >
                     {copiedClipId === clip.id ? (
                       <>
