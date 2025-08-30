@@ -58,12 +58,12 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
         return
       }
 
-      // Check duration - warn if longer than 10 seconds
+      // Check duration - warn if longer than 23 seconds
       const audio = new Audio()
       audio.src = URL.createObjectURL(file)
       audio.onloadedmetadata = () => {
-        if (audio.duration > 10) {
-          setError(`Audio is ${Math.round(audio.duration)}s long. Please trim to 10 seconds or less for best results.`)
+        if (audio.duration > 23) {
+          setError(`Audio is ${Math.round(audio.duration)}s long. Please trim to 23 seconds or less for best results.`)
         }
         URL.revokeObjectURL(audio.src)
         resolve(true)
@@ -178,7 +178,7 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
         data: { publicUrl },
       } = supabase.storage.from("clips").getPublicUrl(fileName)
 
-      const finalDuration = Math.min(Math.round(audio.duration), 10)
+      const finalDuration = Math.min(Math.round(audio.duration), 23)
 
       console.log("[v0] Saving to database")
 
@@ -298,7 +298,7 @@ export function UploadDropzone({ onUploadComplete }: UploadDropzoneProps) {
             </div>
             <div>
               <p className="text-lg font-semibold text-foreground mb-2">Drop your audio file here</p>
-              <p className="text-muted-foreground">Max 10 seconds • MP3, WAV, M4A, OGG, AAC, FLAC supported</p>
+              <p className="text-muted-foreground">Max 23 seconds • MP3, WAV, M4A, OGG, AAC, FLAC supported</p>
             </div>
             <Button className="bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 text-white font-semibold">
               Choose File
