@@ -161,7 +161,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
               className="hover:shadow-lg transition-all duration-200 bg-white/80 backdrop-blur-sm dark:bg-gray-800/80"
             >
               <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={avatarUrl || undefined} alt={displayName} />
@@ -174,7 +174,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                       <p className="text-sm text-gray-600 dark:text-gray-400 truncate">by {displayName}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3 flex-shrink-0">
                     {clip.avg_rating > 0 && (
                       <Badge
                         variant="secondary"

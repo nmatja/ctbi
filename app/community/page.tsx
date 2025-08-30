@@ -16,7 +16,7 @@ export default async function CommunityPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams
 
   const page = Number.parseInt(resolvedSearchParams.page || "1")
-  const itemsPerPage = 6 // Changed items per page from 12 to 6 as requested
+  const itemsPerPage = 9 // Changed items per page from 6 back to 9 as requested
   const offset = (page - 1) * itemsPerPage
 
   const {
