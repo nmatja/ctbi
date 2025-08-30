@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer"
 import { MyClipsList } from "@/components/my-clips-list"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Waves, Music2, TreePine } from "lucide-react"
+import { Music2 } from "lucide-react"
 import Link from "next/link"
 
 export default async function MyClipsPage() {
@@ -81,17 +81,7 @@ export default async function MyClipsPage() {
       <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full">
         {/* Logo Section - Left */}
         <div className="flex items-center gap-3">
-          <Button asChild variant="ghost">
-            <Link href="/">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary via-accent to-secondary rounded-xl flex items-center justify-center shadow-lg">
-                <div className="relative">
-                  <TreePine className="w-4 h-4 text-primary-foreground absolute -top-1 -left-1" />
-                  <Waves className="w-4 h-4 text-primary-foreground absolute top-1 left-1" />
-                </div>
-              </div>
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+          <h1 className="text-2xl font-light bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
             Could that be it?
           </h1>
         </div>
@@ -101,7 +91,7 @@ export default async function MyClipsPage() {
           <Button
             asChild
             variant="ghost"
-            className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 hover:from-primary/20 hover:via-accent/20 hover:to-secondary/20 text-foreground font-medium px-6 py-2 rounded-full border border-border/50"
+            className="bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 text-white font-medium px-6 py-2 rounded-full shadow-lg"
           >
             <Link href="/community" className="flex items-center gap-2">
               <Music2 className="w-4 h-4" />

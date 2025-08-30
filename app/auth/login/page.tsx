@@ -59,29 +59,51 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="absolute top-6 left-6">
-        <Link
-          href="/community"
-          className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <Guitar className="w-4 h-4" />
-          Explore
-        </Link>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-10 left-10">
+          <Guitar className="w-8 h-8 text-orange-600 rotate-12" />
+        </div>
+        <div className="absolute top-32 right-20">
+          <Guitar className="w-6 h-6 text-red-500 -rotate-45" />
+        </div>
+        <div className="absolute bottom-20 left-1/4">
+          <Guitar className="w-10 h-10 text-yellow-500 rotate-45" />
+        </div>
+        <div className="absolute bottom-40 right-10">
+          <Guitar className="w-7 h-7 text-orange-500 -rotate-12" />
+        </div>
+        <div className="absolute top-1/2 left-1/3">
+          <Guitar className="w-5 h-5 text-red-400 rotate-90" />
+        </div>
       </div>
 
-      <div className="w-full max-w-md">
-        <Card className="border-2 shadow-xl">
+      <div className="w-full max-w-md relative z-10">
+        <div className="mb-6 text-center">
+          <Link
+            href="/community"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <Guitar className="w-4 h-4" />
+            <span>Explore Community</span>
+          </Link>
+        </div>
+
+        <Card className="border-2 shadow-xl bg-card/95 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-primary">Welcome Back</CardTitle>
-            <CardDescription className="text-lg">Sign in to share your riffs with the community</CardDescription>
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 via-red-500 to-yellow-500 bg-clip-text text-transparent">
+              Welcome Back
+            </CardTitle>
+            <CardDescription className="text-lg text-muted-foreground">
+              Sign in to share your riffs with the community
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <Button
               onClick={handleGoogleLogin}
               disabled={isLoading}
-              className="w-full h-12 bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 text-white font-semibold shadow-lg"
+              className="w-full h-12 bg-gradient-to-r from-orange-600 via-red-500 to-yellow-500 hover:from-orange-700 hover:via-red-600 hover:to-yellow-600 text-white font-semibold shadow-lg"
             >
               <Chrome className="mr-2 h-5 w-5" />
               Continue with Google
@@ -92,7 +114,7 @@ export default function LoginPage() {
                 <Separator className="w-full" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+                <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
               </div>
             </div>
 
@@ -121,11 +143,13 @@ export default function LoginPage() {
                 />
               </div>
               {error && (
-                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{error}</div>
+                <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md">
+                  {error}
+                </div>
               )}
               <Button
                 type="submit"
-                className="w-full h-12 bg-primary hover:bg-primary/80 text-white font-semibold"
+                className="w-full h-12 bg-gradient-to-r from-orange-500 via-red-400 to-yellow-400 hover:from-orange-600 hover:via-red-500 hover:to-yellow-500 text-white font-semibold shadow-lg"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
@@ -136,7 +160,7 @@ export default function LoginPage() {
               Don't have an account?{" "}
               <Link
                 href="/auth/signup"
-                className="font-semibold text-primary hover:text-primary/80 underline underline-offset-4"
+                className="font-semibold text-orange-600 hover:text-orange-700 underline underline-offset-4"
               >
                 Sign up
               </Link>
