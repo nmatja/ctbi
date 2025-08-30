@@ -103,14 +103,14 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
   if (clips.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="w-24 h-24 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="w-24 h-24 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
           <User className="w-12 h-12 text-white" />
         </div>
         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">No riffs yet</h3>
         <p className="text-gray-600 dark:text-gray-400 mb-6">Be the first to share a riff with the community!</p>
         <Button
           asChild
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
         >
           <Link href="/">Upload Your First Riff</Link>
         </Button>
@@ -195,16 +195,16 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
           return (
             <Card
               key={clip.id}
-              className={`hover:shadow-lg transition-all duration-200 bg-white/80 backdrop-blur-sm dark:bg-gray-800/80 ${
+              className={`hover:shadow-lg transition-all duration-200 bg-white/90 backdrop-blur-sm border-gray-200 dark:bg-gray-800/90 dark:border-gray-700 dark:hover:bg-gray-800/95 ${
                 viewMode === "list" ? "flex" : ""
               }`}
             >
               <CardHeader className={`pb-4 ${viewMode === "list" ? "flex-shrink-0 w-64" : ""}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-10 w-10 ring-2 ring-orange-200 dark:ring-gray-600">
                       <AvatarImage src={avatarUrl || undefined} alt={displayName} />
-                      <AvatarFallback className="bg-gradient-to-br from-primary via-accent to-secondary text-primary-foreground text-sm">
+                      <AvatarFallback className="bg-gradient-to-br from-orange-400 to-red-500 text-white text-sm">
                         {displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -217,7 +217,7 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                     {clip.avg_rating > 0 && (
                       <Badge
                         variant="secondary"
-                        className="bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-200 cursor-pointer hover:bg-yellow-200 dark:hover:bg-yellow-800 transition-colors"
+                        className="bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:border-yellow-700 cursor-pointer hover:bg-yellow-200 dark:hover:bg-yellow-800/70 transition-colors"
                         onClick={() => handleRatingClick(clip)}
                       >
                         <Star className="w-3 h-3 mr-1 fill-current" />
@@ -230,16 +230,10 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
 
               <CardContent className={`space-y-4 ${viewMode === "list" ? "flex-1" : ""}`}>
                 {clip.description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{clip.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{clip.description}</p>
                 )}
 
-                <audio
-                  controls
-                  className="w-full [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-panel]:dark:bg-gray-700 [&::-webkit-media-controls-play-button]:bg-gray-600 [&::-webkit-media-controls-play-button]:dark:bg-gray-500 [&::-webkit-media-controls-timeline]:bg-gray-600 [&::-webkit-media-controls-timeline]:dark:bg-gray-500"
-                  style={{
-                    filter: "invert(0.8) hue-rotate(180deg)",
-                  }}
-                >
+                <audio controls className="w-full h-10 bg-gray-100 dark:bg-gray-700 rounded-lg">
                   <source src={clip.file_url} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>
@@ -270,14 +264,19 @@ export function CommunityFeed({ clips }: CommunityFeedProps) {
                 <div className="flex flex-col gap-2">
                   <Button
                     onClick={() => setSelectedClip(clip)}
-                    className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 text-primary-foreground"
+                    className="w-full bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 hover:from-orange-600 hover:via-red-600 hover:to-yellow-600 text-white border-0"
                     disabled={!currentUser}
                   >
                     <Star className="w-4 h-4 mr-2" />
                     {currentUser ? "Rate this Riff" : "Login to Rate"}
                   </Button>
 
-                  <Button onClick={() => handleCopyLink(clip)} variant="outline" size="sm" className="w-full">
+                  <Button
+                    onClick={() => handleCopyLink(clip)}
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
                     {copiedClipId === clip.id ? (
                       <>
                         <Check className="w-4 h-4 mr-2 text-green-500" />
