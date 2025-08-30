@@ -11,7 +11,7 @@ export async function createClient() {
 
   return createServerClient(
     "https://evchwthsvmforddzdkef.supabase.co",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "your-anon-key-here",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2Y2h3dGhzdm1mb3JkZHpka2VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1NjM3OTQsImV4cCI6MjA3MjEzOTc5NH0.Dqe7D82NYZBlpSZX2b5TScMJzcyfQzZoXfsTZSO0De8",
     {
       cookies: {
         getAll() {

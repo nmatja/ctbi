@@ -11,27 +11,53 @@ import { Music } from "lucide-react"
 import Link from "next/link"
 
 export default async function MyClipsPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const supabase = createClient()
 
-  if (!user) {
+  let user = null
+  let clips = null
+
+  try {
+    const {
+      data: { user: authUser },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError) {
+      console.log("[v0] My Clips auth error:", userError.message)
+      redirect("/auth/login")
+    }
+
+    user = authUser
+    if (!user) {
+      redirect("/auth/login")
+    }
+
+    console.log("[v0] Fetching clips for user:", user.id)
+
+    const { data: clipsData, error: clipsError } = await supabase
+      .from("clips")
+      .select(`
+        *,
+        reviews (
+          id,
+          overall_rating,
+          comment
+        )
+      `)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+
+    if (clipsError) {
+      console.log("[v0] Clips query error:", clipsError.message)
+      clips = []
+    } else {
+      clips = clipsData
+      console.log("[v0] Found clips:", clips?.length || 0)
+    }
+  } catch (error) {
+    console.log("[v0] My Clips page error:", error)
     redirect("/auth/login")
   }
-
-  const { data: clips } = await supabase
-    .from("clips")
-    .select(`
-      *,
-      reviews (
-        id,
-        overall_rating,
-        comment
-      )
-    `)
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
 
   const processedClips =
     clips?.map((clip) => {
@@ -88,21 +114,55 @@ export default async function MyClipsPage() {
       </header>
 
       <main className="flex-1 max-w-7xl mx-auto px-6 py-8 w-full">
-        <div className="space-y-8">
-          {/* Upload Section */}
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Upload New Riff</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Upload Section - Smaller */}
+          <div className="lg:col-span-1 space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Upload New Riff</h2>
             <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-purple-100 dark:border-purple-800 shadow-xl">
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 <UploadDropzone />
               </CardContent>
             </Card>
+
+            {processedClips.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Your Top Rated</h3>
+                {(() => {
+                  const topClip = processedClips.reduce((prev, current) =>
+                    current.avgRating > prev.avgRating ? current : prev,
+                  )
+                  return topClip.avgRating > 0 ? (
+                    <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm">
+                      <CardContent className="p-4">
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-2">{topClip.title}</h4>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          <span className="flex items-center gap-1">⭐ {topClip.avgRating}</span>
+                          <span>•</span>
+                          <span>{topClip.reviewCount} reviews</span>
+                        </div>
+                        <audio controls className="w-full h-8">
+                          <source src={topClip.file_url} type="audio/mpeg" />
+                        </audio>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm">
+                      <CardContent className="p-4 text-center">
+                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                          Upload more riffs to see your top rated!
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )
+                })()}
+              </div>
+            )}
           </div>
 
-          {/* My Clips Section */}
-          <div className="space-y-6">
+          {/* My Clips Section - Larger */}
+          <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Your Riffs ({processedClips.length})</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Your Riffs ({processedClips.length})</h2>
             </div>
 
             <MyClipsList clips={processedClips} />

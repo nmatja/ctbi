@@ -48,31 +48,33 @@ export function UserMenu() {
 
   const getUser = useCallback(async () => {
     try {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser()
+      let attempts = 0
+      const maxAttempts = 3
 
-      if (error) {
-        console.log("[v0] Auth error:", error.message)
-        // Retry once after a short delay
-        setTimeout(async () => {
-          const {
-            data: { user: retryUser },
-          } = await supabase.auth.getUser()
-          setUser(retryUser)
-          if (retryUser) {
-            await fetchProfile(retryUser.id)
+      while (attempts < maxAttempts) {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser()
+
+        if (error) {
+          console.log(`[v0] Auth error (attempt ${attempts + 1}):`, error.message)
+          attempts++
+          if (attempts < maxAttempts) {
+            await new Promise((resolve) => setTimeout(resolve, 1000 * attempts))
+            continue
+          }
+        } else {
+          setUser(user)
+          if (user) {
+            await fetchProfile(user.id)
           }
           setLoading(false)
-        }, 1000)
-        return
+          return
+        }
       }
 
-      setUser(user)
-      if (user) {
-        await fetchProfile(user.id)
-      }
+      // If all attempts failed, set loading to false
       setLoading(false)
     } catch (error) {
       console.log("[v0] Session fetch error:", error)
@@ -91,12 +93,26 @@ export function UserMenu() {
       if (!mounted) return
 
       console.log("[v0] Auth state change:", event)
-      setUser(session?.user ?? null)
-      if (session?.user) {
+
+      if (event === "SIGNED_IN" && session?.user) {
+        console.log("[v0] User signed in:", session.user.id)
+        setUser(session.user)
         await fetchProfile(session.user.id)
-      } else {
+      } else if (event === "SIGNED_OUT") {
+        console.log("[v0] User signed out")
+        setUser(null)
         setProfile(null)
+      } else if (event === "TOKEN_REFRESHED" && session?.user) {
+        console.log("[v0] Token refreshed for user:", session.user.id)
+        setUser(session.user)
+      } else if (event === "INITIAL_SESSION") {
+        console.log("[v0] Initial session:", session?.user ? "User found" : "No user")
+        setUser(session?.user ?? null)
+        if (session?.user) {
+          await fetchProfile(session.user.id)
+        }
       }
+
       setLoading(false)
     })
 
