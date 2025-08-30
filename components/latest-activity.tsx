@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createBrowserClient } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/client" // Fixed import to use createClient instead of createBrowserClient
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Music, MessageCircle, Star, Play, ArrowRight } from "lucide-react"
+import { Music, MessageCircle, Star, Play, ArrowRight, Shield } from "lucide-react"
 import Link from "next/link"
 
 interface ActivityItem {
@@ -24,9 +24,18 @@ interface ActivityItem {
 export function LatestActivity() {
   const [activities, setActivities] = useState<ActivityItem[]>([])
   const [loading, setLoading] = useState(true)
-  const supabase = createBrowserClient()
+  const [currentUser, setCurrentUser] = useState<any>(null) // Added current user state
+  const supabase = createClient()
 
   useEffect(() => {
+    const getCurrentUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      setCurrentUser(user)
+    }
+    getCurrentUser()
+
     const fetchLatestActivity = async () => {
       try {
         // Fetch latest clips
@@ -97,10 +106,7 @@ export function LatestActivity() {
     fetchLatestActivity()
   }, [supabase])
 
-  const blurUserData = (displayName: string) => {
-    if (displayName.length <= 2) return displayName
-    return displayName.charAt(0) + "*".repeat(displayName.length - 2) + displayName.charAt(displayName.length - 1)
-  }
+  const getProtectedDisplayName = () => "Protected User"
 
   if (loading) {
     return (
@@ -142,11 +148,10 @@ export function LatestActivity() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={activity.user_avatar || undefined} />
-                      <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm">
-                        {activity.user_display_name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
+                    <Avatar className="w-10 h-10 relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-white" />
+                      </div>
                     </Avatar>
 
                     <div className="flex-1 min-w-0">
@@ -156,7 +161,7 @@ export function LatestActivity() {
                         {activity.type === "comment" && <MessageCircle className="w-4 h-4 text-blue-600" />}
 
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {blurUserData(activity.user_display_name)}
+                          {getProtectedDisplayName()}
                         </span>
 
                         <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -182,7 +187,7 @@ export function LatestActivity() {
                     size="sm"
                     className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
                   >
-                    <Link href="/auth/login">
+                    <Link href={currentUser ? `/clip/${activity.clip_id}` : "/auth/login"}>
                       <Play className="w-4 h-4" />
                     </Link>
                   </Button>

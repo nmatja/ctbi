@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createBrowserClient } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/client" // Fixed import to use createClient instead of createBrowserClient
 import type { User } from "@supabase/supabase-js"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { UserMenu } from "@/components/user-menu"
@@ -14,7 +14,7 @@ import Link from "next/link"
 export default function HomePage() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createBrowserClient()
+  const supabase = createClient() // Fixed function call to use createClient() which has the proper arguments
 
   useEffect(() => {
     const getUser = async () => {
