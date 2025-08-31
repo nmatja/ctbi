@@ -279,7 +279,7 @@ export function LatestActivity() {
             className="bg-gradient-to-r from-orange-500 via-yellow-500 to-red-500 hover:from-orange-600 hover:via-yellow-600 hover:to-red-600 dark:from-orange-400 dark:via-yellow-400 dark:to-red-400 dark:hover:from-orange-500 dark:hover:via-yellow-500 dark:hover:to-red-500 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 rounded-full"
           >
             <Link href="/community" className="flex items-center gap-2">
-              Explore All Riffs
+              Explore all riffs
               <ArrowRight className="w-4 h-4" />
             </Link>
           </Button>
