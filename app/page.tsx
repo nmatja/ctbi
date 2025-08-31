@@ -92,7 +92,7 @@ export default function HomePage() {
         <div className="bg-card rounded-2xl border border-border p-12 shadow-lg mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Music className="w-6 h-6 text-orange-600" />
-            <h3 className="text-2xl font-semibold text-card-foreground">Upload New Riff Here</h3>
+            <h3 className="text-2xl font-semibold text-card-foreground">Upload new riff here</h3>
             <Music className="w-6 h-6 text-yellow-500" />
           </div>
 
